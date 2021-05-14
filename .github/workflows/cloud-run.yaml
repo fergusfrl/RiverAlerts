@@ -6,7 +6,7 @@ on:
       - "main"
 
 env:
-  CLOUD_RUN_PROJECT_ID: ${{ secrets.CLOUD_RUN_PROJECT_ID }}
+  CLOUD_RUN_PROJECT_ID: ${{ secrets.CLOUD_RUN_PROJECT_NAME }}
   CLOUD_RUN_REGION: ${{ secrets.CLOUD_RUN_REGION }}
   REPO_NAME: River Alerts
 
@@ -39,18 +39,18 @@ jobs:
       # 4. Build and tag image
       - name: Build and tag image
         run: |-
-          docker build . --tag "gcr.io/$CLOUD_RUN_PROJECT_ID/$REPO_NAME:$GITHUB_SHA"
+          docker build . --tag "gcr.io/$CLOUD_RUN_PROJECT_ID/riveralerts:$GITHUB_SHA"
 
       # 5. Push image to GCR
       - name: Push image to GCR
         run: |-
-          docker push gcr.io/$CLOUD_RUN_PROJECT_ID/$REPO_NAME:$GITHUB_SHA
+          docker push gcr.io/$CLOUD_RUN_PROJECT_ID/riveralerts:$GITHUB_SHA
 
       # 6. Deploy
       - name: Deploy
         run: |-
           gcloud components install beta --quiet
-          gcloud beta run deploy $REPO_NAME --image gcr.io/$CLOUD_RUN_PROJECT_ID/$REPO_NAME:$GITHUB_SHA \
+          gcloud beta run deploy riveralerts --image gcr.io/$CLOUD_RUN_PROJECT_ID/riveralerts:$GITHUB_SHA \
             --project $CLOUD_RUN_PROJECT_ID \
             --platform managed \
             --region $CLOUD_RUN_REGION \
