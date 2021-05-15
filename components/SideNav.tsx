@@ -9,7 +9,7 @@ import { Drawer, Grid, List } from '@material-ui/core';
 import PersonIcon from '@material-ui/icons/Person';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import PlaceIcon from '@material-ui/icons/Place';
-import LogoutIcon from '@material-ui/icons/ExitToApp';
+// import LogoutIcon from '@material-ui/icons/ExitToApp';
 
 const useStyles = makeStyles((theme) => ({
   drawer: {
@@ -29,12 +29,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const NAV_ITEMS = [
-  { link: '/profile', label: 'Profile', icon: <PersonIcon fontSize="large" />, disabled: true },
+  { link: '/profile', label: 'Profile', icon: <PersonIcon fontSize="large" />, disabled: false },
   {
     link: '/alerts',
     label: 'My Alerts',
     icon: <NotificationsIcon fontSize="large" />,
-    disabled: true,
+    disabled: false,
   },
   { link: '/', label: 'Gauge Map', icon: <PlaceIcon fontSize="large" />, disabled: false },
 ];
@@ -54,7 +54,7 @@ const SideNav = (): ReactElement => {
           {/* LOGO */}
           <Grid container justify="center" alignItems="center" className={classes.logo}>
             <Link href="/">
-              <Image src="/logo.png" alt="River Alerts Logo" width={55} height={55} />
+              <Image src="/logo.png" alt="River Alerts Logo" width={45} height={45} />
             </Link>
           </Grid>
 
@@ -66,7 +66,7 @@ const SideNav = (): ReactElement => {
           </List>
         </div>
         {/* LOGOUT */}
-        <NavItem link="/" label="Logout" icon={<LogoutIcon fontSize="large" />} disabled />
+        {/* <NavItem link="/" label="Logout" icon={<LogoutIcon fontSize="large" />} disabled /> */}
       </Grid>
     </Drawer>
   );
