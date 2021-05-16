@@ -1,14 +1,10 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, ReactNode } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import NavItem from './NavItem';
 
 import { makeStyles } from '@material-ui/core/styles';
 import { Drawer, Grid, List } from '@material-ui/core';
-
-import PersonIcon from '@material-ui/icons/Person';
-import NotificationsIcon from '@material-ui/icons/Notifications';
-import PlaceIcon from '@material-ui/icons/Place';
 // import LogoutIcon from '@material-ui/icons/ExitToApp';
 
 const useStyles = makeStyles((theme) => ({
@@ -28,18 +24,18 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const NAV_ITEMS = [
-  { link: '/profile', label: 'Profile', icon: <PersonIcon fontSize="large" />, disabled: false },
-  {
-    link: '/alerts',
-    label: 'My Alerts',
-    icon: <NotificationsIcon fontSize="large" />,
-    disabled: false,
-  },
-  { link: '/', label: 'Gauge Map', icon: <PlaceIcon fontSize="large" />, disabled: false },
-];
+type NavItem = {
+  link: string;
+  label: string;
+  icon: ReactNode;
+  disabled?: boolean;
+};
 
-const SideNav = (): ReactElement => {
+type Props = {
+  navList: NavItem[];
+};
+
+const SideNav = ({ navList }: Props): ReactElement => {
   const classes = useStyles();
   return (
     <Drawer variant="permanent" className={classes.drawer} classes={{ paper: classes.drawer }}>
@@ -54,13 +50,13 @@ const SideNav = (): ReactElement => {
           {/* LOGO */}
           <Grid container justify="center" alignItems="center" className={classes.logo}>
             <Link href="/">
-              <Image src="/logo.png" alt="River Alerts Logo" width={45} height={45} />
+              <Image src="/logo.png" priority alt="River Alerts Logo" width={45} height={45} />
             </Link>
           </Grid>
 
           {/* NAVIGATION */}
           <List>
-            {NAV_ITEMS.map((navItem) => (
+            {navList.map((navItem) => (
               <NavItem {...navItem} key={navItem.label.toLowerCase()} />
             ))}
           </List>
