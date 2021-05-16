@@ -12,7 +12,9 @@ import PlaceIcon from '@material-ui/icons/Place';
 
 const useStyles = makeStyles((theme) => ({
   content: {
-    paddingLeft: theme.spacing(11),
+    [theme.breakpoints.up('sm')]: {
+      paddingLeft: theme.spacing(11),
+    },
   },
 }));
 

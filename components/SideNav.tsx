@@ -1,11 +1,11 @@
-import React, { ReactElement, ReactNode } from 'react';
+import React, { ReactElement } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { NavItem as NavItemProps } from '../types';
 import NavItem from './NavItem';
 
 import { makeStyles } from '@material-ui/core/styles';
 import { Drawer, Grid, List } from '@material-ui/core';
-// import LogoutIcon from '@material-ui/icons/ExitToApp';
 
 const useStyles = makeStyles((theme) => ({
   drawer: {
@@ -24,19 +24,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-type NavItem = {
-  link: string;
-  label: string;
-  icon: ReactNode;
-  disabled?: boolean;
-};
-
 type Props = {
-  navList: NavItem[];
+  navList: NavItemProps[];
 };
 
 const SideNav = ({ navList }: Props): ReactElement => {
   const classes = useStyles();
+
   return (
     <Drawer variant="permanent" className={classes.drawer} classes={{ paper: classes.drawer }}>
       <Grid
@@ -61,8 +55,6 @@ const SideNav = ({ navList }: Props): ReactElement => {
             ))}
           </List>
         </div>
-        {/* LOGOUT */}
-        {/* <NavItem link="/" label="Logout" icon={<LogoutIcon fontSize="large" />} disabled /> */}
       </Grid>
     </Drawer>
   );

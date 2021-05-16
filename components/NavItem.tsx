@@ -9,11 +9,11 @@ const useStyles = makeStyles((theme) => ({
   listItem: {
     paddingLeft: theme.spacing(1),
     paddingRight: theme.spacing(1),
-    opacity: '0.75',
+    opacity: 0.7,
   },
   selected: {
-    boxShadow: `3px 0 0 0 white inset`,
-    opacity: '1',
+    boxShadow: `3px 0 0 0 ${theme.palette.primary.contrastText} inset`,
+    opacity: 1,
   },
   icon: {
     color: theme.palette.primary.contrastText,
