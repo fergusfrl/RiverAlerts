@@ -17,8 +17,6 @@ RUN npm prune --production
 
 FROM node:alpine
 
-ENV NODE_ENV production
-
 WORKDIR /app
 
 # copy from build image

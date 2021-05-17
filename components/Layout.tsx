@@ -1,11 +1,11 @@
 import React, { ReactNode, ReactElement } from 'react';
 import Head from 'next/head';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
+import { makeStyles } from '@material-ui/core/styles';
 
 import SideNav from './SideNav';
 import BottomNav from './BottomNav';
 
+import { Hidden } from '@material-ui/core';
 import PersonIcon from '@material-ui/icons/Person';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import PlaceIcon from '@material-ui/icons/Place';
@@ -36,8 +36,6 @@ type Props = {
 
 const Layout = ({ children, title = 'This is the default title' }: Props): ReactElement => {
   const classes = useStyles();
-  const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.up('sm'));
 
   return (
     <div>
@@ -46,7 +44,12 @@ const Layout = ({ children, title = 'This is the default title' }: Props): React
         <meta charSet="utf-8" />
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
-      {matches ? <SideNav navList={NAV_LIST} /> : <BottomNav navList={NAV_LIST} />}
+      <Hidden implementation="css" xsDown>
+        <SideNav navList={NAV_LIST} />
+      </Hidden>
+      <Hidden implementation="css" smUp>
+        <BottomNav navList={NAV_LIST} />
+      </Hidden>
       <div className={classes.content}>{children}</div>
     </div>
   );
