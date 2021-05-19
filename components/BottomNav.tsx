@@ -12,6 +12,7 @@ const useStyles = makeStyles((theme) => ({
     width: '100%',
     bottom: 0,
     backgroundColor: theme.palette.primary.main,
+    zIndex: theme.zIndex.drawer + 1,
   },
   navItem: {
     color: `${theme.palette.primary.contrastText} !important`,

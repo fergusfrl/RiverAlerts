@@ -3,25 +3,28 @@ import axios from 'axios';
 
 import { Gauge } from '../types';
 import Layout from '../components/Layout';
+import ListPanel from '../components/GaugeList';
 
-const IndexPage = ({ gauges }: { gauges: Gauge[] }): ReactElement => {
+type Props = {
+  gauges: Gauge[];
+};
+
+const IndexPage = ({ gauges }: Props): ReactElement => {
   return (
     <Layout title="Gauge Map | River Alerts">
-      <h1>Gauge Map Page</h1>
-      {gauges.map((item: Gauge) => (
-        <h1 key={item.id}>{item.name}</h1>
-      ))}
+      <ListPanel gauges={gauges} />
+      Map View
     </Layout>
   );
 };
 
-export const getStaticProps = async (): Promise<{ props: { gauges: Gauge[] } }> => {
+export const getStaticProps = async (): Promise<{ props: Props }> => {
   const response = await axios.post('https://data.riverguide.co.nz/', {
     action: 'get_features',
     crossDomain: true,
     filters: ['flow', 'stage_height'],
   });
-  const data = await response.data;
+  const data = response.data;
 
   return { props: { gauges: data.features } };
 };

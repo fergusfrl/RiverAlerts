@@ -17,7 +17,14 @@ type GaugeLocation = {
   lon: number;
 };
 
+type Observables = {
+  latest_value: number;
+  type: 'flow' | 'stage_height';
+  units: 'cumecs' | 'meters';
+};
+
 export type Gauge = {
+  [key: string]: any;
   data_source: string;
   id: string;
   last_updated: string;
@@ -25,4 +32,19 @@ export type Gauge = {
   name: string;
   region: string;
   river_name: string;
+  observables: Observables[];
+};
+
+export type GroupedGauges = {
+  [key: string]: Gauge[];
+};
+
+type RiverGroup = {
+  river: string;
+  gauges: Gauge[];
+};
+
+export type RegionGroup = {
+  region: string;
+  rivers: RiverGroup[];
 };
