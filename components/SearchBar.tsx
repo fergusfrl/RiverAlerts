@@ -37,8 +37,10 @@ const useStyles = makeStyles((theme) => ({
     padding: 10,
   },
   tabContainer: {
-    paddingTop: theme.spacing(1),
     width: '100%',
+    [theme.breakpoints.down('xs')]: {
+      paddingTop: theme.spacing(1),
+    },
   },
 }));
 
@@ -56,12 +58,14 @@ const SearchBar = (): ReactElement => {
           <SearchIcon />
         </IconButton>
       </Paper>
-      <Hidden implementation="css" smUp className={classes.tabContainer}>
-        <Tabs variant="fullWidth" textColor="primary" indicatorColor="primary" value={0}>
-          <Tab label="List" />
-          <Tab label="Map" />
-        </Tabs>
-      </Hidden>
+      <div className={classes.tabContainer}>
+        <Hidden implementation="css" smUp>
+          <Tabs variant="fullWidth" textColor="primary" indicatorColor="primary" value={0}>
+            <Tab label="List" />
+            <Tab label="Map" />
+          </Tabs>
+        </Hidden>
+      </div>
     </AppBar>
   );
 };
