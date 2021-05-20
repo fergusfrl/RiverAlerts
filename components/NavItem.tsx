@@ -7,8 +7,8 @@ import { Grid, ListItem, ListItemIcon, ListItemText, Typography } from '@materia
 
 const useStyles = makeStyles((theme) => ({
   listItem: {
-    paddingLeft: theme.spacing(1),
-    paddingRight: theme.spacing(1),
+    paddingLeft: theme.spacing(1.5),
+    paddingRight: theme.spacing(1.5),
     opacity: 0.7,
   },
   selected: {

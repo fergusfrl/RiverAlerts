@@ -1,5 +1,4 @@
 import React, { ReactElement } from 'react';
-import Link from 'next/link';
 import Image from 'next/image';
 import { NavItem as NavItemProps } from '../types';
 import NavItem from './NavItem';
@@ -20,7 +19,6 @@ const useStyles = makeStyles((theme) => ({
   logo: {
     paddingTop: theme.spacing(2),
     paddingBottom: theme.spacing(2),
-    cursor: 'pointer',
   },
 }));
 
@@ -43,9 +41,7 @@ const SideNav = ({ navList }: Props): ReactElement => {
         <div>
           {/* LOGO */}
           <Grid container justify="center" alignItems="center" className={classes.logo}>
-            <Link href="/">
-              <Image src="/logo.png" priority alt="River Alerts Logo" width={45} height={45} />
-            </Link>
+            <Image src="/logo.png" priority alt="River Alerts Logo" width={45} height={45} />
           </Grid>
 
           {/* NAVIGATION */}

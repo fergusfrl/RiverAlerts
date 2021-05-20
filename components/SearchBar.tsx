@@ -1,8 +1,9 @@
-import React, { ReactElement } from 'react';
+import React, { ChangeEvent, ReactElement, useState } from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
 import { AppBar, Hidden, IconButton, InputBase, Paper, Tab, Tabs } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
+import CloseIcon from '@material-ui/icons/Close';
 
 const useStyles = makeStyles((theme) => ({
   toolbar: {
@@ -15,7 +16,6 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.primary.contrastText,
     ...theme.mixins.toolbar,
     [theme.breakpoints.up('sm')]: {
-      width: 360,
       paddingBottom: theme.spacing(3),
     },
   },
@@ -44,18 +44,39 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SearchBar = (): ReactElement => {
+type Props = {
+  handleSearch: (searchString: string) => void;
+};
+
+const SearchBar = ({ handleSearch }: Props): ReactElement => {
   const classes = useStyles();
+  const [searchVal, setSearchVal] = useState('');
+
+  const handleChange = (event: ChangeEvent<HTMLInputElement>): void => {
+    const value = event.target.value;
+    handleSearch(value);
+    setSearchVal(value);
+  };
+
+  const handleClick = (): void => {
+    if (searchVal.length > 0) {
+      handleSearch('');
+      setSearchVal('');
+    }
+  };
+
   return (
     <AppBar className={classes.toolbar} position="sticky" elevation={0}>
       <Paper className={classes.paper} elevation={4}>
         <InputBase
+          value={searchVal}
           className={classes.input}
           placeholder="Search Gauges"
           inputProps={{ 'aria-label': `Search Gauges` }}
+          onChange={handleChange}
         />
-        <IconButton className={classes.iconButton} aria-label="search">
-          <SearchIcon />
+        <IconButton className={classes.iconButton} aria-label="search" onClick={handleClick}>
+          {searchVal.length === 0 ? <SearchIcon /> : <CloseIcon />}
         </IconButton>
       </Paper>
       <div className={classes.tabContainer}>

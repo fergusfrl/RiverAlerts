@@ -27,13 +27,14 @@ const useStyles = makeStyles((theme) => ({
 
 type Props = {
   gauges: Gauge[];
+  handleSearch: (searchString: string) => void;
 };
 
-const GaugeList = ({ gauges }: Props): ReactElement => {
+const GaugeList = ({ gauges, handleSearch }: Props): ReactElement => {
   const classes = useStyles();
   return (
     <Drawer variant="permanent" classes={{ root: classes.drawer, paper: classes.drawer }}>
-      <SearchBar />
+      <SearchBar handleSearch={handleSearch} />
       <List classes={{ root: classes.list }}>
         {groupByRegionAndRiver(gauges).map((region: RegionGroup) => (
           <GaugeListItem region={region} key={region.region} />

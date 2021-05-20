@@ -26,7 +26,7 @@ const NAV_LIST = [
     icon: <NotificationsIcon />,
     disabled: false,
   },
-  { link: '/', label: 'Gauge Map', icon: <PlaceIcon />, disabled: false },
+  { link: '/', label: 'Gauges', icon: <PlaceIcon />, disabled: false },
 ];
 
 type Props = {
