@@ -14,9 +14,11 @@
     "@types/lodash.debounce": "^4.0.6",
     "axios": "^0.21.1",
     "lodash.debounce": "^4.0.8",
+    "mapbox-gl": "^2.2.0",
     "next": "latest",
     "react": "^17.0.1",
-    "react-dom": "^17.0.1"
+    "react-dom": "^17.0.1",
+    "react-mapbox-gl": "^5.1.1"
   },
   "devDependencies": {
     "@types/node": "^12.12.21",

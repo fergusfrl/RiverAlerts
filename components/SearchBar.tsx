@@ -46,9 +46,11 @@ const useStyles = makeStyles((theme) => ({
 
 type Props = {
   handleSearch: (searchString: string) => void;
+  toggleViewType: () => void;
+  viewType: string;
 };
 
-const SearchBar = ({ handleSearch }: Props): ReactElement => {
+const SearchBar = ({ handleSearch, toggleViewType, viewType }: Props): ReactElement => {
   const classes = useStyles();
   const [searchVal, setSearchVal] = useState('');
 
@@ -81,9 +83,15 @@ const SearchBar = ({ handleSearch }: Props): ReactElement => {
       </Paper>
       <div className={classes.tabContainer}>
         <Hidden implementation="css" smUp>
-          <Tabs variant="fullWidth" textColor="primary" indicatorColor="primary" value={0}>
-            <Tab label="List" />
-            <Tab label="Map" />
+          <Tabs
+            variant="fullWidth"
+            textColor="primary"
+            indicatorColor="primary"
+            onChange={toggleViewType}
+            value={viewType}
+          >
+            <Tab label="List" value="LIST_VIEW" />
+            <Tab label="Map" value="MAP_VIEW" />
           </Tabs>
         </Hidden>
       </div>

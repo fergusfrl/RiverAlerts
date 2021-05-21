@@ -5,6 +5,13 @@ import debounce from 'lodash.debounce';
 import { Gauge } from '../types';
 import Layout from '../components/Layout';
 import GaugeList from '../components/GaugeList';
+import GaugeMap from '../components/GaugeMap';
+
+import { useTheme } from '@material-ui/core/styles';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
+
+const LIST_VIEW = 'LIST_VIEW';
+const MAP_VIEW = 'MAP_VIEW';
 
 type Props = {
   gauges: Gauge[];
@@ -12,10 +19,18 @@ type Props = {
 
 const IndexPage = ({ gauges }: Props): ReactElement => {
   const [searchString, setSearchString] = useState('');
+  const [viewType, setViewType] = useState(LIST_VIEW);
+
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.down('xs'));
 
   const handleSearch = debounce((value: string) => {
     setSearchString(value);
   }, 300);
+
+  const toggleViewType = (): void => {
+    setViewType(viewType === LIST_VIEW ? MAP_VIEW : LIST_VIEW);
+  };
 
   const filterGauges = useMemo(() => {
     if (searchString.length === 0) {
@@ -33,8 +48,13 @@ const IndexPage = ({ gauges }: Props): ReactElement => {
 
   return (
     <Layout title="Gauges | River Alerts">
-      <GaugeList gauges={filterGauges} handleSearch={handleSearch} />
-      Map View
+      <GaugeList
+        gauges={filterGauges}
+        handleSearch={handleSearch}
+        toggleViewType={toggleViewType}
+        viewType={viewType}
+      />
+      {!matches && <GaugeMap />}
     </Layout>
   );
 };

@@ -2,11 +2,12 @@ import React, { ReactElement } from 'react';
 
 import { groupByRegionAndRiver } from '../utils/utils';
 import { Gauge, RegionGroup } from '../types';
+import GaugeListItem from './GaugeListItem';
+import SearchBar from './SearchBar';
+import GaugeMap from './GaugeMap';
 
 import { makeStyles } from '@material-ui/core/styles';
 import { Drawer, List } from '@material-ui/core';
-import GaugeListItem from './GaugeListItem';
-import SearchBar from './SearchBar';
 
 const useStyles = makeStyles((theme) => ({
   drawer: {
@@ -28,18 +29,24 @@ const useStyles = makeStyles((theme) => ({
 type Props = {
   gauges: Gauge[];
   handleSearch: (searchString: string) => void;
+  toggleViewType: () => void;
+  viewType: string;
 };
 
-const GaugeList = ({ gauges, handleSearch }: Props): ReactElement => {
+const GaugeList = ({ gauges, handleSearch, toggleViewType, viewType }: Props): ReactElement => {
   const classes = useStyles();
   return (
     <Drawer variant="permanent" classes={{ root: classes.drawer, paper: classes.drawer }}>
-      <SearchBar handleSearch={handleSearch} />
-      <List classes={{ root: classes.list }}>
-        {groupByRegionAndRiver(gauges).map((region: RegionGroup) => (
-          <GaugeListItem region={region} key={region.region} />
-        ))}
-      </List>
+      <SearchBar handleSearch={handleSearch} toggleViewType={toggleViewType} viewType={viewType} />
+      {viewType === 'LIST_VIEW' ? (
+        <List classes={{ root: classes.list }}>
+          {groupByRegionAndRiver(gauges).map((region: RegionGroup) => (
+            <GaugeListItem region={region} key={region.region} />
+          ))}
+        </List>
+      ) : (
+        <GaugeMap />
+      )}
     </Drawer>
   );
 };
