@@ -134,17 +134,30 @@ const GaugeMap = ({ gauges }: Props): ReactElement => {
         width: `calc(100vw - ${matches ? 0 : 453}px)`,
       }}
     >
-      <Cluster zoomOnClick zoomOnClickPadding={70} radius={70} ClusterMarkerFactory={clusterMarker}>
-        {gauges.map((gauge, index) => marker(gauge, index))}
-      </Cluster>
-      <FormControlLabel
-        className={classes.formControl}
-        control={
-          <Switch color="secondary" checked={satellite} onChange={() => setSatellite(!satellite)} />
-        }
-        label={<Typography className={classes.switchLabel}>Satellite</Typography>}
-      />
-      <ZoomControl zoomDiff={1.3} position="bottom-right" className={classes.zoomControl} />
+      <>
+        <Cluster
+          zoomOnClick
+          zoomOnClickPadding={70}
+          radius={70}
+          ClusterMarkerFactory={clusterMarker}
+        >
+          {gauges.map((gauge, index) => marker(gauge, index))}
+        </Cluster>
+        <FormControlLabel
+          className={classes.formControl}
+          control={
+            <Switch
+              color="secondary"
+              checked={satellite}
+              onChange={() => setSatellite(!satellite)}
+            />
+          }
+          label={<Typography className={classes.switchLabel}>Satellite</Typography>}
+        />
+        {!matches && (
+          <ZoomControl zoomDiff={1.3} position="bottom-right" className={classes.zoomControl} />
+        )}
+      </>
     </Map>
   );
 };
