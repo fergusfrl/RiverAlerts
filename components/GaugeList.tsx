@@ -45,7 +45,7 @@ const GaugeList = ({ gauges, handleSearch, toggleViewType, viewType }: Props): R
           ))}
         </List>
       ) : (
-        <GaugeMap />
+        <GaugeMap gauges={gauges} />
       )}
     </Drawer>
   );

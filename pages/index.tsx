@@ -54,7 +54,7 @@ const IndexPage = ({ gauges }: Props): ReactElement => {
         toggleViewType={toggleViewType}
         viewType={viewType}
       />
-      {!matches && <GaugeMap />}
+      {!matches && <GaugeMap gauges={filterGauges} />}
     </Layout>
   );
 };
