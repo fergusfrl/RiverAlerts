@@ -1,4 +1,4 @@
-import { ReactElement, useState } from 'react';
+import { ReactElement, useState, MouseEvent } from 'react';
 import { useRouter } from 'next/router';
 import ReactMapboxGL, { Cluster, Marker, ZoomControl } from 'react-mapbox-gl';
 
@@ -87,12 +87,17 @@ const GaugeMap = ({ gauges }: Props): ReactElement => {
     setCenter(mapConfig.getCenter());
   };
 
+  const handleMarkerClick = (event: MouseEvent, id: string): void => {
+    event.preventDefault();
+    router.push(`?gaugeId=${id}`, `/gauge/${id}`);
+  };
+
   const marker = (gauge: Gauge, index: number): ReactElement => (
     <Marker
       key={index}
       className={classes.mapMarker}
       coordinates={[gauge.location.lon, gauge.location.lat]}
-      onClick={() => router.push(`?gaugeId=${gauge.id}`, `/gauge/${gauge.id}`)}
+      onClick={(event) => handleMarkerClick(event, gauge.id)}
     >
       <>
         <PlaceIcon color="primary" />
