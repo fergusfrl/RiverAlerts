@@ -1,4 +1,5 @@
-import React, { ReactElement, useState } from 'react';
+import { ReactElement, useState } from 'react';
+import { useRouter } from 'next/router';
 import ReactMapboxGL, { Cluster, Marker, ZoomControl } from 'react-mapbox-gl';
 
 import { Gauge } from '../types';
@@ -69,6 +70,7 @@ const GaugeMap = ({ gauges }: Props): ReactElement => {
   const [center, setCenter] = useState<[number, number]>([172.186, -41.1]);
   const [zoom, setZoom] = useState(4.5);
   const [pitch, setPitch] = useState(0);
+  const router = useRouter();
   const classes = useStyles({ satellite });
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('xs'));
@@ -90,7 +92,7 @@ const GaugeMap = ({ gauges }: Props): ReactElement => {
       key={index}
       className={classes.mapMarker}
       coordinates={[gauge.location.lon, gauge.location.lat]}
-      onClick={() => console.log('CLICKITY CLANCK')}
+      onClick={() => router.push(`?gaugeId=${gauge.id}`, `/gauge/${gauge.id}`)}
     >
       <>
         <PlaceIcon color="primary" />

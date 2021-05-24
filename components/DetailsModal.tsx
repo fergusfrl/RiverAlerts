@@ -1,9 +1,22 @@
-import { useEffect, ReactElement, useState } from 'react';
+import { useEffect, ReactElement, useState, forwardRef } from 'react';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 
-import { makeStyles } from '@material-ui/core/styles';
-import { Card, CardContent, CardHeader, IconButton, Slide, Typography } from '@material-ui/core';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  Dialog,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  IconButton,
+  Slide,
+  Typography,
+} from '@material-ui/core';
+import { TransitionProps } from '@material-ui/core/transitions';
 import CloseIcon from '@material-ui/icons/Close';
 
 import { Gauge, GaugeData } from '../types/index';
@@ -18,6 +31,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const Transition = forwardRef(function Transition(
+  props: TransitionProps & { children?: React.ReactElement },
+  ref: React.Ref<unknown>
+) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
+
 type Props = {
   gaugeData: Gauge | undefined;
 };
@@ -26,40 +46,55 @@ const DetailsModal = ({ gaugeData }: Props): ReactElement => {
   const [liveData, setLiveData] = useState<GaugeData | null>(null);
   const classes = useStyles();
   const router = useRouter();
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.down('xs'));
   const {
     query: { gaugeId },
   } = router;
 
   useEffect(() => {
-    axios
-      .post('https://data.riverguide.co.nz/', {
-        action: 'get_flows',
-        id: [gaugeId],
-      })
-      .then((res) => {
-        setLiveData(res.data);
-      });
+    if (gaugeId) {
+      axios
+        .post('https://data.riverguide.co.nz/', {
+          action: 'get_flows',
+          id: [gaugeId],
+        })
+        .then((res) => {
+          setLiveData(res.data);
+        });
+    }
   }, [gaugeId]);
 
   return (
-    <Slide in={!!gaugeId} direction="up" timeout={150}>
-      <Card className={classes.card}>
-        <CardHeader
-          title={
-            <Typography color="primary" variant="h5">
-              {liveData?.name}
-            </Typography>
-          }
-          subheader={`${gaugeData?.river_name}, ${gaugeData?.region}`}
-          action={
-            <IconButton onClick={() => router.push('/')}>
-              <CloseIcon />
-            </IconButton>
-          }
-        />
-        <CardContent>{liveData?.name}</CardContent>
-      </Card>
-    </Slide>
+    <>
+      {matches ? (
+        <Dialog fullScreen open={!!gaugeId} TransitionComponent={Transition}>
+          <DialogTitle>{gaugeData?.name}</DialogTitle>
+          <DialogContent>
+            <DialogContentText>{liveData?.last_updated}</DialogContentText>
+          </DialogContent>
+        </Dialog>
+      ) : (
+        <Slide in={!!gaugeId} direction="up" timeout={150}>
+          <Card className={classes.card}>
+            <CardHeader
+              title={
+                <Typography color="primary" variant="h5">
+                  {gaugeData?.name}
+                </Typography>
+              }
+              subheader={`${gaugeData?.river_name}, ${gaugeData?.region}`}
+              action={
+                <IconButton onClick={() => router.push('/')}>
+                  <CloseIcon />
+                </IconButton>
+              }
+            />
+            <CardContent>{liveData?.last_updated}</CardContent>
+          </Card>
+        </Slide>
+      )}
+    </>
   );
 };
 
