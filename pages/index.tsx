@@ -1,4 +1,5 @@
 import { ReactElement, useMemo, useState } from 'react';
+import { useRouter } from 'next/router';
 import axios from 'axios';
 import debounce from 'lodash.debounce';
 
@@ -6,6 +7,7 @@ import { Gauge } from '../types';
 import Layout from '../components/Layout';
 import GaugeList from '../components/GaugeList';
 import GaugeMap from '../components/GaugeMap';
+import DetailsModal from '../components/DetailsModal';
 
 import { useTheme } from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
@@ -20,7 +22,7 @@ type Props = {
 const IndexPage = ({ gauges }: Props): ReactElement => {
   const [searchString, setSearchString] = useState('');
   const [viewType, setViewType] = useState(LIST_VIEW);
-
+  const router = useRouter();
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('xs'));
 
@@ -55,11 +57,12 @@ const IndexPage = ({ gauges }: Props): ReactElement => {
         viewType={viewType}
       />
       {!matches && <GaugeMap gauges={filterGauges} />}
+      <DetailsModal gaugeData={gauges.find((gauge) => gauge.id === router.query.gaugeId)} />
     </Layout>
   );
 };
 
-export const getStaticProps = async (): Promise<{ props: Props }> => {
+export const getServerSideProps = async (): Promise<{ props: Props }> => {
   const response = await axios.post('https://data.riverguide.co.nz/', {
     action: 'get_features',
     crossDomain: true,

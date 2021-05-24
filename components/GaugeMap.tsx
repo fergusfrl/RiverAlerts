@@ -128,7 +128,7 @@ const GaugeMap = ({ gauges }: Props): ReactElement => {
       onZoomEnd={handleZoom}
       onPitchEnd={handlePitch}
       containerStyle={{
-        position: 'fixed',
+        position: 'absolute',
         right: 0,
         height: '100vh',
         width: `calc(100vw - ${matches ? 0 : 453}px)`,

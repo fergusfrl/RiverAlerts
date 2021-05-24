@@ -1,4 +1,5 @@
-import React, { ReactElement, useState } from 'react';
+import { ReactElement, useState } from 'react';
+import Link from 'next/link';
 
 import {
   Collapse,
@@ -29,9 +30,11 @@ const GaugeListItem = ({ region }: Props): ReactElement => {
           <div key={river.river}>
             <ListSubheader>{river.river}</ListSubheader>
             {river.gauges.map((gauge) => (
-              <ListItem button dense key={gauge.id}>
-                <ListItemText inset>{gauge.name}</ListItemText>
-              </ListItem>
+              <Link href={`?gaugeId=${gauge.id}`} as={`/gauge/${gauge.id}`} key={gauge.id}>
+                <ListItem button dense>
+                  <ListItemText inset>{gauge.name}</ListItemText>
+                </ListItem>
+              </Link>
             ))}
           </div>
         ))}

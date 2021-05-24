@@ -48,3 +48,16 @@ export type RegionGroup = {
   region: string;
   rivers: RiverGroup[];
 };
+
+export type Reading = {
+  stage_height?: number;
+  flow?: number;
+  time: string;
+};
+
+export type GaugeData = {
+  id: string;
+  last_updated: string;
+  name: string;
+  flows: Reading[];
+};
