@@ -2,6 +2,8 @@ import { useEffect, ReactElement, useState, forwardRef } from 'react';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 
+import TimeSeriesGraph from './TimeSeriesGraph';
+
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import {
@@ -12,12 +14,14 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Grid,
   IconButton,
   Slide,
   Typography,
 } from '@material-ui/core';
 import { TransitionProps } from '@material-ui/core/transitions';
 import CloseIcon from '@material-ui/icons/Close';
+import PlaceOutlinedIcon from '@material-ui/icons/PlaceOutlined';
 
 import { Gauge, GaugeData } from '../types/index';
 
@@ -28,6 +32,22 @@ const useStyles = makeStyles((theme) => ({
     bottom: theme.spacing(2),
     left: '465px',
     width: `calc(100% - ${475}px)`,
+    maxHeight: `calc(100% - ${30}px)`,
+    overflow: 'auto',
+  },
+  cardHeader: {
+    zIndex: 1000,
+    position: 'fixed',
+    width: `calc(100% - ${491}px)`,
+    backgroundColor: 'white',
+    borderRadius: '4px',
+  },
+  cardHeaderContent: {},
+  subtitle: {
+    marginLeft: theme.spacing(1),
+  },
+  cardContent: {
+    marginTop: theme.spacing(12),
   },
 }));
 
@@ -52,6 +72,14 @@ const DetailsModal = ({ gaugeData }: Props): ReactElement => {
     query: { gaugeId },
   } = router;
 
+  const flowData = liveData?.flows
+    .filter((observation) => !!observation.flow)
+    .map(({ flow, time }) => ({ flow, time }));
+
+  const stageHeigthData = liveData?.flows
+    .filter((observation) => !!observation.stage_height)
+    .map(({ stage_height, time }) => ({ stage_height, time }));
+
   useEffect(() => {
     if (gaugeId) {
       axios
@@ -65,37 +93,59 @@ const DetailsModal = ({ gaugeData }: Props): ReactElement => {
     }
   }, [gaugeId]);
 
-  return (
-    <>
-      {matches ? (
-        <Dialog fullScreen open={!!gaugeId} TransitionComponent={Transition}>
-          <DialogTitle>{gaugeData?.name}</DialogTitle>
-          <DialogContent>
-            <DialogContentText>{liveData?.last_updated}</DialogContentText>
-          </DialogContent>
-        </Dialog>
-      ) : (
-        <Slide in={!!gaugeId} direction="up" timeout={150}>
-          <Card className={classes.card}>
-            <CardHeader
-              title={
-                <Typography color="primary" variant="h5">
-                  {gaugeData?.name}
-                </Typography>
-              }
-              subheader={`${gaugeData?.river_name}, ${gaugeData?.region}`}
-              action={
-                <IconButton onClick={() => router.push('/')}>
-                  <CloseIcon />
-                </IconButton>
-              }
-            />
-            <CardContent>{liveData?.last_updated}</CardContent>
-          </Card>
-        </Slide>
-      )}
-    </>
+  // On small screen, use Full Screen Dialog
+  const renderDialog = (): ReactElement => (
+    <Dialog fullScreen open={!!gaugeId} TransitionComponent={Transition}>
+      <DialogTitle>{gaugeData?.name}</DialogTitle>
+      <DialogContent>
+        <DialogContentText>{liveData?.last_updated}</DialogContentText>
+      </DialogContent>
+    </Dialog>
   );
+
+  // On large screen, use Card Popup
+  const renderModal = (): ReactElement => (
+    <Slide in={!!gaugeId} direction="up" timeout={150}>
+      <Card className={classes.card}>
+        <CardHeader
+          title={
+            <Typography color="primary" variant="h5">
+              {gaugeData?.name}
+            </Typography>
+          }
+          subheader={
+            <Grid container justify="flex-start" alignItems="center">
+              <PlaceOutlinedIcon />
+              <Typography
+                variant="subtitle1"
+                className={classes.subtitle}
+              >{`${gaugeData?.river_name}, ${gaugeData?.region}`}</Typography>
+            </Grid>
+          }
+          action={
+            <IconButton onClick={() => router.push('/')}>
+              <CloseIcon />
+            </IconButton>
+          }
+          classes={{ root: classes.cardHeader }}
+        />
+        <CardContent className={classes.cardContent}>
+          {flowData && flowData.length > 0 && (
+            <TimeSeriesGraph data={flowData} units="cumecs" gaugeSource={gaugeData?.data_source} />
+          )}
+          {stageHeigthData && stageHeigthData.length > 0 && (
+            <TimeSeriesGraph
+              data={stageHeigthData}
+              units="meters"
+              gaugeSource={gaugeData?.data_source}
+            />
+          )}
+        </CardContent>
+      </Card>
+    </Slide>
+  );
+
+  return <>{matches ? renderDialog() : renderModal()}</>;
 };
 
 export default DetailsModal;
