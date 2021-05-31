@@ -14,6 +14,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Divider,
   Grid,
   IconButton,
   Slide,
@@ -33,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
     left: '465px',
     width: `calc(100% - ${475}px)`,
     maxHeight: `calc(100% - ${30}px)`,
-    overflow: 'auto',
+    // overflow: 'auto',
   },
   cardHeader: {
     zIndex: 1000,
@@ -46,8 +47,9 @@ const useStyles = makeStyles((theme) => ({
   subtitle: {
     marginLeft: theme.spacing(1),
   },
-  cardContent: {
-    marginTop: theme.spacing(12),
+  cardContentWrapper: {
+    maxHeight: `calc(100vh - ${120}px)`,
+    overflow: 'auto',
   },
 }));
 
@@ -127,9 +129,9 @@ const DetailsModal = ({ gaugeData }: Props): ReactElement => {
               <CloseIcon />
             </IconButton>
           }
-          classes={{ root: classes.cardHeader }}
         />
-        <CardContent className={classes.cardContent}>
+        <Divider />
+        <CardContent className={classes.cardContentWrapper}>
           {flowData && flowData.length > 0 && (
             <TimeSeriesGraph data={flowData} units="cumecs" gaugeSource={gaugeData?.data_source} />
           )}
