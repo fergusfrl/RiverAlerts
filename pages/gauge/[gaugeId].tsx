@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: theme.spacing(1),
   },
   graphs: {
-    padding8: theme.spacing(4, 0),
+    margin: theme.spacing(4, 0),
     overflow: 'auto',
   },
 }));
