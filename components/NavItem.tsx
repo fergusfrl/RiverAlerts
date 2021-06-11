@@ -10,6 +10,10 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: theme.spacing(1.5),
     paddingRight: theme.spacing(1.5),
     opacity: 0.7,
+    transition: 'opacity 0.3s',
+    '&:hover': {
+      opacity: 1,
+    },
   },
   selected: {
     boxShadow: `3px 0 0 0 ${theme.palette.primary.contrastText} inset`,

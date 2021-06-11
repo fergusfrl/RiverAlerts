@@ -34,7 +34,6 @@ const useStyles = makeStyles((theme) => ({
     left: '465px',
     width: `calc(100% - ${475}px)`,
     maxHeight: `calc(100% - ${30}px)`,
-    // overflow: 'auto',
   },
   cardHeader: {
     zIndex: 1000,
@@ -84,6 +83,7 @@ const DetailsModal = ({ gaugeData }: Props): ReactElement => {
 
   useEffect(() => {
     if (gaugeId) {
+      setLiveData(null);
       axios
         .post('https://data.riverguide.co.nz/', {
           action: 'get_flows',

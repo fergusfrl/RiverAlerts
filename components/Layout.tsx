@@ -12,6 +12,8 @@ import PlaceIcon from '@material-ui/icons/Place';
 
 const useStyles = makeStyles((theme) => ({
   content: {
+    overflow: 'auto',
+    height: '100vh',
     [theme.breakpoints.up('sm')]: {
       paddingLeft: theme.spacing(11),
     },
