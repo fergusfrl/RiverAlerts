@@ -15,15 +15,10 @@ const FIREBASE_ADMIN_PARAMS = {
 
 export const verifyIdToken = (token: string): Promise<admin.auth.DecodedIdToken> => {
   if (!admin.apps.length) {
-    admin.initializeApp();
-    if (process.env.NODE_ENV === 'production') {
-      admin.initializeApp();
-    } else {
-      admin.initializeApp({
-        credential: admin.credential.cert(FIREBASE_ADMIN_PARAMS),
-        // TODO: add db connection here: "databaseURL: process.env.FIREBASE_DATABASE_URL,""
-      });
-    }
+    admin.initializeApp({
+      credential: admin.credential.cert(FIREBASE_ADMIN_PARAMS),
+      // TODO: add db connection here: "databaseURL: process.env.FIREBASE_DATABASE_URL,""
+    });
   }
 
   return admin

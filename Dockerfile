@@ -9,7 +9,7 @@ RUN yarn install --frozen-lockfile
 
 COPY . .
 
-RUN echo %NEXT_PUBLIC_FIREBASE_API_KEY%
+RUN echo NEXT_PUBLIC_FIREBASE_API_KEY
 
 # set env args
 ARG NEXT_PUBLIC_FIREBASE_API_KEY
