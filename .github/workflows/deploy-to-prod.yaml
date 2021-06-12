@@ -42,6 +42,7 @@ jobs:
       # 4. Build and tag image
       - name: Build and tag image
         run: |-
+          echo workflow: ${{ secrets.FIREBASE_API_KEY }}
           docker build . --tag "gcr.io/$CLOUD_RUN_PROJECT_ID/riveralerts:$GITHUB_SHA" \
             --build-arg NEXT_PUBLIC_FIREBASE_API_KEY=${{ secrets.FIREBASE_API_KEY }}
             --build-arg NEXT_PUBLIC_FIREBASE_PROJECT_ID=${{ secrets.FIREBASE_PROJECT_ID }}
