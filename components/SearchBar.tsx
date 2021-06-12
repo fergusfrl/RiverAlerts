@@ -10,7 +10,7 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingTop: theme.spacing(3),
+    paddingTop: theme.spacing(2.5),
     width: '100%',
     borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
     backgroundColor: theme.palette.primary.contrastText,

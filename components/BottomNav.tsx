@@ -33,7 +33,7 @@ const BottomNav = ({ navList }: Props): ReactElement => {
 
   return (
     <BottomNavigation classes={{ root: classes.bottomNav }}>
-      {navList.map(({ link, label, icon }) => (
+      {navList.map(({ link, label, icon, disabled }) => (
         <Link href={link} key={label.toLowerCase()}>
           <BottomNavigationAction
             value={link}
@@ -41,6 +41,7 @@ const BottomNav = ({ navList }: Props): ReactElement => {
             icon={icon}
             showLabel
             selected={router.pathname === link}
+            disabled={disabled}
             classes={{
               root: classes.navItem,
               selected: classes.selected,

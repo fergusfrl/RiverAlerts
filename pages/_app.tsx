@@ -1,6 +1,8 @@
 import { useEffect, ReactElement } from 'react';
 import { ThemeProvider } from '@material-ui/core/styles';
+import { SnackbarProvider } from 'notistack';
 import CssBaseline from '@material-ui/core/CssBaseline';
+import { AuthProvider } from '../auth';
 
 import theme from '../theme/theme';
 
@@ -15,7 +17,17 @@ function MyApp({ Component, pageProps }: any): ReactElement {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Component {...pageProps} />
+      <AuthProvider>
+        <SnackbarProvider
+          maxSnack={3}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'right',
+          }}
+        >
+          <Component {...pageProps} />
+        </SnackbarProvider>
+      </AuthProvider>
     </ThemeProvider>
   );
 }

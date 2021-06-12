@@ -19,6 +19,9 @@ FROM node:alpine
 
 WORKDIR /app
 
+# create secrets.json file
+RUN echo -n $SERVICE_ACCOUNT_KEY_FILE | base64 --decode > ./secrets.json
+
 # copy from build image
 COPY --from=BUILD_IMAGE /app/package.json ./package.json
 COPY --from=BUILD_IMAGE /app/node_modules ./node_modules
