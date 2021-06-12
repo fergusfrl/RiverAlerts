@@ -34,7 +34,11 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
   },
   cardActions: {
-    float: 'right',
+    display: 'flex',
+    justifyContent: 'space-between',
+  },
+  primaryButton: {
+    marginLeft: theme.spacing(),
   },
 }));
 
@@ -112,19 +116,26 @@ const RegisterPage = (): ReactElement => {
           </form>
         </CardContent>
         <CardActions className={classes.cardActions}>
-          <Link href="/">
-            <Button disabled={isAuthenticating}>Back</Button>
-          </Link>
-          <Button
-            form="login-form"
-            type="submit"
-            variant="contained"
-            color="secondary"
-            onClick={handleSignIn}
-            disabled={isAuthenticating}
-          >
-            {isAuthenticating ? <CircularProgress size={25} /> : 'Sign In'}
-          </Button>
+          <Typography className={classes.subheader}>
+            <Link href="/forgot-password">Forgot your password?</Link>
+          </Typography>
+
+          <div>
+            <Link href="/">
+              <Button disabled={isAuthenticating}>Back</Button>
+            </Link>
+            <Button
+              form="login-form"
+              type="submit"
+              variant="contained"
+              color="secondary"
+              onClick={handleSignIn}
+              disabled={isAuthenticating}
+              className={classes.primaryButton}
+            >
+              {isAuthenticating ? <CircularProgress size={25} /> : 'Sign In'}
+            </Button>
+          </div>
         </CardActions>
       </Card>
     </Layout>
