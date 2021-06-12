@@ -22,7 +22,7 @@ const AlertsPage = ({ session }: Props): ReactElement => {
   }
 
   return (
-    <Layout title="Alerts | River Alerts">
+    <Layout title="Alerts">
       <h1>Alerts Page</h1>
     </Layout>
   );

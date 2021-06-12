@@ -1,4 +1,4 @@
-import { useState, ReactElement, ChangeEvent } from 'react';
+import { useState, ReactElement, ChangeEvent, MouseEvent } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import firebaseClient from '../firebaseClient';
@@ -53,7 +53,8 @@ const RegisterPage = (): ReactElement => {
     if (event.target.id === 'password') setPassword(value);
   };
 
-  const handleRegister = (): void => {
+  const handleRegister = (event: MouseEvent): void => {
+    event.preventDefault();
     setIsAuthenticating(true);
     firebase
       .auth()
@@ -75,7 +76,7 @@ const RegisterPage = (): ReactElement => {
   };
 
   return (
-    <Layout>
+    <Layout title="Register">
       <Card className={classes.card}>
         <CardHeader
           title="Register an Account"
@@ -86,7 +87,7 @@ const RegisterPage = (): ReactElement => {
           }
         />
         <CardContent>
-          <form className={classes.form}>
+          <form className={classes.form} id="register-form">
             <TextField
               value={email}
               label="Email Address"
@@ -114,6 +115,8 @@ const RegisterPage = (): ReactElement => {
             <Button disabled={isAuthenticating}>Back</Button>
           </Link>
           <Button
+            form="register-form"
+            type="submit"
             variant="contained"
             color="secondary"
             onClick={handleRegister}

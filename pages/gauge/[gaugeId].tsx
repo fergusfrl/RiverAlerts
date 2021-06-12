@@ -40,7 +40,7 @@ const GaugePage = ({ gaugeInfo, observations }: Props): ReactElement => {
     .map(({ stage_height, time }) => ({ stage_height, time }));
 
   return (
-    <Layout title={(gaugeInfo ? gaugeInfo.name : 'Gauge') + ' | RiverAlerts'}>
+    <Layout title={gaugeInfo ? gaugeInfo.name : 'Gauge'}>
       <div className={classes.container}>
         <Typography color="primary" variant="h5">
           {gaugeInfo?.name}

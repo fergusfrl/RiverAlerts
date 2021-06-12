@@ -49,7 +49,7 @@ const IndexPage = ({ gauges }: Props): ReactElement => {
   }, [searchString, gauges]);
 
   return (
-    <Layout title="Gauges | River Alerts">
+    <Layout title="Gauges">
       <GaugeList
         gauges={filterGauges}
         handleSearch={handleSearch}
