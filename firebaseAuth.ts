@@ -1,6 +1,7 @@
 import admin from 'firebase-admin';
+import { User } from './types';
 
-export const verifyIdToken = (token: string): Promise<admin.auth.DecodedIdToken> => {
+const initializeAdminSDK = (): void => {
   if (!admin.apps.length) {
     // if deployed to a GCP environment, ENV VARs not required.
     if (process.env.NODE_ENV === 'production') {
@@ -20,11 +21,14 @@ export const verifyIdToken = (token: string): Promise<admin.auth.DecodedIdToken>
       };
       admin.initializeApp({
         credential: admin.credential.cert(firebaseAuthParams),
-        // TODO: add db connection here: "databaseURL: process.env.FIREBASE_DATABASE_URL,""
+        // databaseURL: ,
       });
     }
   }
+};
 
+export const verifyIdToken = (token: string): Promise<admin.auth.DecodedIdToken> => {
+  initializeAdminSDK();
   return admin
     .auth()
     .verifyIdToken(token)
@@ -32,3 +36,19 @@ export const verifyIdToken = (token: string): Promise<admin.auth.DecodedIdToken>
       throw err;
     });
 };
+
+export const getUserDoc = async (uid: string): Promise<User> => {
+  initializeAdminSDK();
+  const userDoc = await admin.firestore().collection('users').doc(uid).get();
+  return userDoc.data() as User;
+};
+
+// export const deleteUser = (uid: string): Promise<void> => {
+//   initializeAdminSDK();
+//   return admin
+//     .auth()
+//     .deleteUser(uid)
+//     .catch((err) => {
+//       throw err;
+//     });
+// };

@@ -1,8 +1,15 @@
 import { ReactNode } from 'react';
 
+type Name = {
+  first: string;
+  last: string;
+};
+
 export type User = {
-  id: number;
-  name: string;
+  name: Name;
+  email: string;
+  phoneNumber: string;
+  alerts: string[];
 };
 
 export type NavItem = {

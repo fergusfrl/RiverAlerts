@@ -11,7 +11,7 @@ const firebaseConfig = {
 };
 
 const firebaseClient = (): void => {
-  if (typeof window !== 'undefined' && !firebase.apps.length) {
+  if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
   }
 };
