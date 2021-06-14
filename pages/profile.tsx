@@ -1,6 +1,6 @@
 import { ChangeEvent, MouseEvent, ReactElement, useState } from 'react';
 import { useRouter } from 'next/router';
-import { verifyIdToken, getUserDoc } from '../firebaseAuth';
+import { verifyIdToken, getUser } from '../firebaseAuth';
 import { GetServerSideProps } from 'next';
 import { useSnackbar } from 'notistack';
 import nookies from 'nookies';
@@ -183,7 +183,6 @@ const ProfilePage = ({ user, session }: Props): ReactElement => {
             <br />
           </form>
           <div className={classes.buttonGroup}>
-            {' '}
             <Button disabled={!isDirty} onClick={handleClear}>
               Clear Changes
             </Button>
@@ -222,7 +221,7 @@ export const getServerSideProps: GetServerSideProps = async (
     const token = await verifyIdToken(cookies.token);
     const { uid, email } = token;
 
-    const user = await getUserDoc(uid);
+    const user = await getUser(uid);
 
     return {
       props: {

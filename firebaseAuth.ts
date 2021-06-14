@@ -1,5 +1,5 @@
 import admin from 'firebase-admin';
-import { User } from './types';
+import { User, Alert } from './types';
 
 const initializeAdminSDK = (): void => {
   if (!admin.apps.length) {
@@ -37,12 +37,42 @@ export const verifyIdToken = (token: string): Promise<admin.auth.DecodedIdToken>
     });
 };
 
-export const getUserDoc = async (uid: string): Promise<User> => {
+const getUserRef = (
+  uid: string
+): FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData> =>
+  admin.firestore().collection('users').doc(uid);
+
+/**
+ * Get User in SSR.
+ *
+ * @param uid
+ * @returns
+ */
+export const getUser = async (uid: string): Promise<User> => {
   initializeAdminSDK();
-  const userDoc = await admin.firestore().collection('users').doc(uid).get();
+  const userRef = getUserRef(uid);
+  const userDoc = await userRef.get();
   return userDoc.data() as User;
 };
 
+/**
+ * Get User Alerts in SSR.
+ *
+ * @param uid
+ * @returns
+ */
+export const getUserAlerts = async (uid: string): Promise<Alert[]> => {
+  initializeAdminSDK();
+  const userRef = getUserRef(uid);
+  const alertRefs = await userRef.collection('alerts').get();
+  const alerts = alertRefs.docs.map((alertRef) => {
+    const alert = alertRef.data() as Alert;
+    return alert;
+  });
+  return alerts;
+};
+
+// TODO: implement deleteUser
 // export const deleteUser = (uid: string): Promise<void> => {
 //   initializeAdminSDK();
 //   return admin

@@ -68,3 +68,22 @@ export type GaugeData = {
   name: string;
   flows: Reading[];
 };
+
+type Threshold = {
+  operation: 'greater-than' | 'less-than' | 'equals';
+  value: number;
+  units: string;
+};
+
+type ContactPreference = {
+  email: boolean;
+  sms: boolean;
+};
+
+export type Alert = {
+  name: string;
+  description: string;
+  gauge: Gauge;
+  threshold: Threshold;
+  contactPreference: ContactPreference;
+};
