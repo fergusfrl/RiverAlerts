@@ -26,6 +26,7 @@ const useStyles = makeStyles((theme) => ({
       left: '5em',
       width: 380,
     },
+    overflow: 'auto',
   },
   list: {
     paddingTop: 0,
@@ -35,6 +36,7 @@ const useStyles = makeStyles((theme) => ({
   },
   card: {
     margin: theme.spacing(),
+    minHeight: 120,
   },
   cardTitle: {
     fontSize: '1.25em',
@@ -130,7 +132,7 @@ const AlertList = ({ alerts }: Props): ReactElement => {
 
   return (
     <Drawer variant="permanent" classes={{ root: classes.drawer, paper: classes.drawer }}>
-      <SearchBar handleSearch={setSearchString} />
+      <SearchBar handleSearch={setSearchString} placeholder="Search Alerts" />
       {alerts.length === 0 && renderEmptyList()}
       {alerts.length > 0 && renderAlerts()}
       {alerts.length > 0 && filteredAlerts.length === 0 && renderAlertsNotFound()}

@@ -64,7 +64,12 @@ const GaugeList = ({ gauges, handleSearch, toggleViewType, viewType }: Props): R
           </Link>
         </div>
       )}
-      <SearchBar handleSearch={handleSearch} toggleViewType={toggleViewType} viewType={viewType} />
+      <SearchBar
+        handleSearch={handleSearch}
+        toggleViewType={toggleViewType}
+        viewType={viewType}
+        placeholder="Search Gauges"
+      />
       {viewType === 'LIST_VIEW' ? (
         <List classes={{ root: classes.list }}>
           {groupByRegionAndRiver(gauges).map((region: RegionGroup) => (

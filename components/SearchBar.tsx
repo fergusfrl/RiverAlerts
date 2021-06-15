@@ -48,9 +48,15 @@ type Props = {
   handleSearch: (searchString: string) => void;
   toggleViewType?: () => void;
   viewType?: string;
+  placeholder?: string;
 };
 
-const SearchBar = ({ handleSearch, toggleViewType, viewType }: Props): ReactElement => {
+const SearchBar = ({
+  handleSearch,
+  toggleViewType,
+  viewType,
+  placeholder = 'Search',
+}: Props): ReactElement => {
   const classes = useStyles();
   const [searchVal, setSearchVal] = useState('');
 
@@ -73,7 +79,7 @@ const SearchBar = ({ handleSearch, toggleViewType, viewType }: Props): ReactElem
         <InputBase
           value={searchVal}
           className={classes.input}
-          placeholder="Search Gauges"
+          placeholder={placeholder}
           inputProps={{ 'aria-label': `Search Gauges` }}
           onChange={handleChange}
         />
