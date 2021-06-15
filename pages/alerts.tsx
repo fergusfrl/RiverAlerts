@@ -1,5 +1,4 @@
 import { ReactElement } from 'react';
-import { useRouter } from 'next/router';
 import { verifyIdToken, getUserAlerts } from '../firebaseAuth';
 import { GetServerSideProps } from 'next';
 import nookies from 'nookies';
@@ -38,13 +37,8 @@ type Props = {
   alerts: Alert[] | null;
 };
 
-const AlertsPage = ({ session, alerts }: Props): ReactElement => {
-  const router = useRouter();
+const AlertsPage = ({ alerts }: Props): ReactElement => {
   const classes = useStyles();
-
-  if (!session) {
-    router.push('/login');
-  }
 
   return (
     <Layout title="Alerts">

@@ -1,9 +1,14 @@
-import { ChangeEvent, ReactElement, useState } from 'react';
+import { ChangeEvent, MouseEvent, ReactElement, useState } from 'react';
+import axios from 'axios';
 import { verifyIdToken } from '../../firebaseAuth';
 import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import { useSnackbar } from 'notistack';
 import nookies from 'nookies';
+import firebaseClient from '../../firebaseClient';
+import firebase from 'firebase/app';
+import 'firebase/auth';
 
 import Layout from '../../components/Layout';
 
@@ -18,6 +23,8 @@ import {
   MenuItem,
   Select,
 } from '@material-ui/core';
+import { useEffect } from 'react';
+import { Gauge } from '../../types';
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -62,16 +69,104 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const CreateAlert = (): ReactElement => {
+type Props = {
+  session: { uid: string } | null;
+};
+
+const CreateAlert = ({ session }: Props): ReactElement => {
   const classes = useStyles();
   const router = useRouter();
+  const { enqueueSnackbar } = useSnackbar();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [gauges, setGauges] = useState<Gauge[]>([]);
+  const [selectedGauge, setSelectedGauge] = useState<Gauge | null>(null);
+  const [operation, setOperation] = useState('greater-than');
+  const [value, setValue] = useState<number | null>(null);
+  const [units, setUnits] = useState('Cumecs');
+  const [email, setEmail] = useState(false);
+  const [sms, setSms] = useState(false);
+
+  firebaseClient();
+
+  useEffect(() => {
+    axios
+      .post('https://data.riverguide.co.nz/', {
+        action: 'get_features',
+        crossDomain: true,
+        filters: ['flow', 'stage_height'],
+      })
+      .then((res) => {
+        const orderedGauges = res.data.features.sort((a: Gauge, b: Gauge) => {
+          if (a.name > b.name) return 1;
+          if (a.name < b.name) return -1;
+          return 0;
+        });
+        setGauges(orderedGauges);
+      })
+      .catch(() => {
+        enqueueSnackbar('Could not get gauges', {
+          variant: 'error',
+        });
+      });
+  }, [enqueueSnackbar]);
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>): void => {
     const value = event.target.value;
     if (event.target.id === 'title') setTitle(value);
     if (event.target.id === 'description') setDescription(value);
+  };
+
+  const handleGaugeSelect = (event: ChangeEvent<{ value: unknown }>): void => {
+    const gauge = gauges.find((gauge) => gauge.id === event.target.value) || null;
+    setSelectedGauge(gauge);
+  };
+
+  const handleOperationSelect = (event: ChangeEvent<{ value: unknown }>): void => {
+    if (typeof event.target.value === 'string') setOperation(event.target.value);
+  };
+
+  const handleUnitsSelect = (event: ChangeEvent<{ value: unknown }>): void => {
+    if (typeof event.target.value === 'string') setUnits(event.target.value);
+  };
+
+  const handleValueChange = (event: ChangeEvent<HTMLInputElement>): void => {
+    const val = parseInt(event.target.value, 10) || null;
+    setValue(val);
+  };
+
+  const handleCreate = (event: MouseEvent): void => {
+    event.preventDefault();
+    if (session) {
+      firebase
+        .firestore()
+        .collection('users')
+        .doc(session.uid)
+        .collection('alerts')
+        .doc()
+        .set({
+          name: title,
+          description: description,
+          gauge: selectedGauge,
+          threshold: {
+            operation,
+            value,
+            units,
+          },
+          contactPreference: {
+            email,
+            sms,
+          },
+        })
+        .then(() => {
+          router.push('/alerts');
+        })
+        .catch(() => {
+          enqueueSnackbar('Something went wrong.', {
+            variant: 'error',
+          });
+        });
+    }
   };
 
   return (
@@ -100,9 +195,6 @@ const CreateAlert = (): ReactElement => {
             value={description}
           />
           <br />
-          {/* <Divider /> */}
-          {/* <br /> */}
-          {/* <FormLabel component="legend">Alert Condition</FormLabel> */}
           <div className={classes.threshold}>
             <div className={classes.gridItem}>
               <Typography variant="body1" color="primary" style={{ whiteSpace: 'nowrap' }}>
@@ -110,10 +202,18 @@ const CreateAlert = (): ReactElement => {
               </Typography>
             </div>
             <div className={classes.gridItem}>
-              <Select defaultValue={0} variant="outlined" className={classes.inlineSelect}>
-                <MenuItem value={0}>Taieri at Outram</MenuItem>
-                <MenuItem value={1}>Taieri at Sutton</MenuItem>
-                <MenuItem value={2}>Taieri at Mouth</MenuItem>
+              <Select
+                defaultValue={0}
+                variant="outlined"
+                className={classes.inlineSelect}
+                placeholder="Gauge name"
+                onChange={handleGaugeSelect}
+              >
+                {gauges.map((gauge) => (
+                  <MenuItem key={gauge.id} value={gauge.id}>
+                    {gauge.name}
+                  </MenuItem>
+                ))}
               </Select>
             </div>
             <div className={classes.gridItem}>
@@ -126,6 +226,7 @@ const CreateAlert = (): ReactElement => {
                 defaultValue="greater-than"
                 variant="outlined"
                 className={classes.inlineSelect}
+                onChange={handleOperationSelect}
               >
                 <MenuItem value={'greater-than'}>Greater Than</MenuItem>
                 <MenuItem value={'less-than'}>Less Than</MenuItem>
@@ -137,11 +238,17 @@ const CreateAlert = (): ReactElement => {
                 id="value"
                 placeholder="20"
                 variant="outlined"
+                onChange={handleValueChange}
                 className={classes.valueInput}
               />
             </div>
             <div className={classes.gridItem}>
-              <Select defaultValue="Cumecs" variant="outlined" className={classes.inlineSelect}>
+              <Select
+                defaultValue="Cumecs"
+                variant="outlined"
+                className={classes.inlineSelect}
+                onChange={handleUnitsSelect}
+              >
                 <MenuItem value={'Cumecs'}>Cumecs</MenuItem>
                 <MenuItem value={'Meters'}>Meters</MenuItem>
               </Select>
@@ -159,8 +266,16 @@ const CreateAlert = (): ReactElement => {
               <Typography variant="body1" color="primary" className={classes.contactInfoLabel}>
                 Alert me by:
               </Typography>
-              <FormControlLabel control={<Checkbox name="email" />} label="Email" />
-              <FormControlLabel control={<Checkbox name="sms" />} label="SMS" />
+              <FormControlLabel
+                control={
+                  <Checkbox name="email" checked={email} onChange={() => setEmail(!email)} />
+                }
+                label="Email"
+              />
+              <FormControlLabel
+                control={<Checkbox name="sms" checked={sms} onChange={() => setSms(!sms)} />}
+                label="SMS"
+              />
             </div>
           </div>
         </form>
@@ -178,6 +293,7 @@ const CreateAlert = (): ReactElement => {
             form="create-alert"
             type="submit"
             className={classes.primaryButton}
+            onClick={handleCreate}
           >
             Create Alert
           </Button>
