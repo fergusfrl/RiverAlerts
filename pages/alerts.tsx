@@ -1,12 +1,14 @@
-import { ReactElement } from 'react';
+import { ReactElement, useMemo } from 'react';
 import { verifyIdToken, getUserAlerts } from '../firebaseAuth';
 import { GetServerSideProps } from 'next';
+import { useRouter } from 'next/router';
 import nookies from 'nookies';
 import 'firebase/auth';
 
 import { Alert } from '../types';
 import Layout from '../components/Layout';
 import AlertList from '../components/AlertList';
+import AlertDisplay from '../components/AlertDisplay';
 
 import { makeStyles } from '@material-ui/core/styles';
 import { Typography } from '@material-ui/core';
@@ -14,7 +16,7 @@ import NotificationsIcon from '@material-ui/icons/NotificationsNone';
 
 const useStyles = makeStyles((theme) => ({
   container: {
-    margin: theme.spacing(2.5, 0, 0, 48),
+    marginLeft: theme.spacing(48),
     height: '100%',
     display: 'flex',
   },
@@ -30,24 +32,36 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 type Props = {
-  session: {
-    uid: string;
-    email: string | undefined;
-  } | null;
   alerts: Alert[] | null;
 };
 
 const AlertsPage = ({ alerts }: Props): ReactElement => {
   const classes = useStyles();
+  const router = useRouter();
+  const {
+    query: { alertId },
+  } = router;
+
+  const selectedAlertId = typeof alertId === 'string' ? alertId : null;
+
+  const selectedAlert = useMemo(
+    () => alerts?.find((alert) => alert.id === alertId),
+    [alerts, alertId]
+  );
+
+  const renderNotSelected = (): ReactElement => (
+    <div className={classes.center}>
+      <NotificationsIcon />
+      <Typography>Select an alert to view</Typography>
+      {alertId && <div>{`fetch details for alert with id: ${alertId}`}</div>}
+    </div>
+  );
 
   return (
     <Layout title="Alerts">
-      {alerts && <AlertList alerts={alerts} />}
+      {alerts && <AlertList alerts={alerts} selectedId={selectedAlertId} />}
       <div className={classes.container}>
-        <div className={classes.center}>
-          <NotificationsIcon />
-          <Typography>Select an alert to view</Typography>
-        </div>
+        {alertId ? <AlertDisplay alert={selectedAlert} /> : renderNotSelected()}
       </div>
     </Layout>
   );
@@ -59,20 +73,24 @@ export const getServerSideProps: GetServerSideProps = async (
   try {
     const cookies = nookies.get(context);
     const token = await verifyIdToken(cookies.token);
-    const { uid, email } = token;
+    const { uid } = token;
 
     const alerts = await getUserAlerts(uid);
+    const sortedAlerts = alerts.sort((a, b) => {
+      if (a.name > b.name) return 1;
+      if (a.name < b.name) return -1;
+      return 0;
+    });
 
     return {
-      props: {
-        session: { uid, email },
-        alerts: alerts || null,
-      },
+      props: { alerts: sortedAlerts || null },
     };
   } catch (err) {
     context.res.writeHead(302, { location: '/login' });
     context.res.end();
-    return { props: { session: null, alerts: null } };
+    return {
+      props: { alerts: null },
+    };
   }
 };
 

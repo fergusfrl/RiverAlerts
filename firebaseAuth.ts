@@ -21,12 +21,22 @@ const initializeAdminSDK = (): void => {
       };
       admin.initializeApp({
         credential: admin.credential.cert(firebaseAuthParams),
-        // databaseURL: ,
       });
     }
   }
 };
 
+const getUserRef = (
+  uid: string
+): FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData> =>
+  admin.firestore().collection('users').doc(uid);
+
+/**
+ * Decodes the provided session token if valid.
+ *
+ * @param token
+ * @returns Promise<admin.auth.DecodedIdToken>
+ */
 export const verifyIdToken = (token: string): Promise<admin.auth.DecodedIdToken> => {
   initializeAdminSDK();
   return admin
@@ -37,16 +47,11 @@ export const verifyIdToken = (token: string): Promise<admin.auth.DecodedIdToken>
     });
 };
 
-const getUserRef = (
-  uid: string
-): FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData> =>
-  admin.firestore().collection('users').doc(uid);
-
 /**
  * Get User in SSR.
  *
  * @param uid
- * @returns
+ * @returns User
  */
 export const getUser = async (uid: string): Promise<User> => {
   initializeAdminSDK();
@@ -59,17 +64,32 @@ export const getUser = async (uid: string): Promise<User> => {
  * Get User Alerts in SSR.
  *
  * @param uid
- * @returns
+ * @returns Alert[]
  */
 export const getUserAlerts = async (uid: string): Promise<Alert[]> => {
   initializeAdminSDK();
   const userRef = getUserRef(uid);
   const alertRefs = await userRef.collection('alerts').get();
   const alerts = alertRefs.docs.map((alertRef) => {
-    const alert = alertRef.data() as Alert;
+    const id = alertRef.id;
+    const alert = { id, ...alertRef.data() } as Alert;
     return alert;
   });
   return alerts;
+};
+
+/**
+ * Get a User Alert in SSR.
+ *
+ * @param uid
+ * @param alertId
+ * @returns Alert
+ */
+export const getUserAlert = async (uid: string, alertId: string): Promise<Alert> => {
+  initializeAdminSDK();
+  const userRef = getUserRef(uid);
+  const alert = await userRef.collection('alerts').doc(alertId).get();
+  return alert.data() as Alert;
 };
 
 // TODO: implement deleteUser

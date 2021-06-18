@@ -9,7 +9,7 @@ const theme = createMuiTheme({
     secondary: {
       main: '#E63B66',
       contrastText: '#fff'
-    }
+    },
   },
 });
 

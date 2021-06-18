@@ -81,6 +81,7 @@ type ContactPreference = {
 };
 
 export type Alert = {
+  id: string;
   name: string;
   description: string;
   gauge: Gauge;

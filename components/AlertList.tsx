@@ -27,6 +27,7 @@ const useStyles = makeStyles((theme) => ({
       width: 380,
     },
     overflow: 'auto',
+    paddingBottom: theme.spacing(2.5),
   },
   list: {
     paddingTop: 0,
@@ -35,8 +36,10 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   card: {
+    backgroundColor: theme.palette.primary.main,
+  },
+  cardWrapper: {
     margin: theme.spacing(),
-    minHeight: 120,
   },
   cardTitle: {
     fontSize: '1.25em',
@@ -48,6 +51,9 @@ const useStyles = makeStyles((theme) => ({
   },
   cardContent: {
     paddingTop: 0,
+  },
+  cardContentTypography: {
+    fontSize: '1em',
   },
   fab: {
     position: 'fixed',
@@ -72,9 +78,10 @@ const getOperationTranslation = (operation: string): string => {
 
 type Props = {
   alerts: Alert[];
+  selectedId: string | null;
 };
 
-const AlertList = ({ alerts }: Props): ReactElement => {
+const AlertList = ({ alerts, selectedId }: Props): ReactElement => {
   const classes = useStyles();
   const router = useRouter();
   const [searchString, setSearchString] = useState<string | null>(null);
@@ -94,37 +101,59 @@ const AlertList = ({ alerts }: Props): ReactElement => {
   );
 
   const renderAlerts = (): ReactElement[] =>
-    filteredAlerts.map((alert) => (
-      <Card key={alert.name.toLowerCase()} className={classes.card}>
-        <CardActionArea
-          onClick={() => {
-            console.log('card clicked...');
-          }}
-        >
-          <CardHeader
-            title={
-              <Typography color="primary" variant="h5" className={classes.cardTitle}>
-                {alert.name}
-              </Typography>
-            }
-            subheader={
-              <Grid container justify="flex-start" alignItems="center">
-                <PlaceOutlinedIcon fontSize="small" />
-                <Typography variant="subtitle1" className={classes.cardSubtitle}>
-                  {`${alert.gauge.name}, ${alert.gauge.river_name}`}
+    filteredAlerts.map((alert) => {
+      const isSelected = selectedId === alert.id;
+      return (
+        <div key={alert.id} className={classes.cardWrapper}>
+          <Card className={isSelected ? classes.card : ''} elevation={isSelected ? 0 : 2}>
+            <CardActionArea
+              onClick={() => {
+                router.push(`alerts?alertId=${alert.id}`, `/alerts/${alert.id}`);
+              }}
+            >
+              <CardHeader
+                title={
+                  <Typography
+                    color="primary"
+                    variant="h5"
+                    className={classes.cardTitle}
+                    style={{ color: isSelected ? 'white' : '' }}
+                  >
+                    {alert.name}
+                  </Typography>
+                }
+                subheader={
+                  <Grid
+                    container
+                    justify="flex-start"
+                    alignItems="center"
+                    direction="row"
+                    wrap="nowrap"
+                    style={{ color: isSelected ? 'lightGrey' : '' }}
+                  >
+                    <PlaceOutlinedIcon fontSize="small" />
+                    <Typography variant="subtitle1" className={classes.cardSubtitle}>
+                      {`${alert.gauge.name}, ${alert.gauge.river_name}`}
+                    </Typography>
+                  </Grid>
+                }
+              />
+              <CardContent className={classes.cardContent}>
+                <Typography
+                  color="primary"
+                  variant="body1"
+                  className={classes.cardContentTypography}
+                  style={{ color: isSelected ? 'white' : '' }}
+                >
+                  {getOperationTranslation(alert.threshold.operation)}
+                  <strong>{` ${alert.threshold.value} ${alert.threshold.units}`}</strong>
                 </Typography>
-              </Grid>
-            }
-          />
-          <CardContent className={classes.cardContent}>
-            <Typography color="primary" variant="body1">
-              {getOperationTranslation(alert.threshold.operation)}
-              <strong>{` ${alert.threshold.value} ${alert.threshold.units}`}</strong>
-            </Typography>
-          </CardContent>
-        </CardActionArea>
-      </Card>
-    ));
+              </CardContent>
+            </CardActionArea>
+          </Card>
+        </div>
+      );
+    });
 
   const renderAlertsNotFound = (): ReactElement => (
     <p className={classes.center}>No alerts found.</p>
