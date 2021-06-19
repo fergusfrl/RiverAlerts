@@ -88,8 +88,9 @@ export const getUserAlerts = async (uid: string): Promise<Alert[]> => {
 export const getUserAlert = async (uid: string, alertId: string): Promise<Alert> => {
   initializeAdminSDK();
   const userRef = getUserRef(uid);
-  const alert = await userRef.collection('alerts').doc(alertId).get();
-  return alert.data() as Alert;
+  const alertDoc = await userRef.collection('alerts').doc(alertId).get();
+  const alert = { id: alertId, ...alertDoc.data() } as Alert;
+  return alert;
 };
 
 // TODO: implement deleteUser

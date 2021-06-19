@@ -1,21 +1,21 @@
 import { ChangeEvent, MouseEvent, ReactElement, useState } from 'react';
 import axios from 'axios';
-import { verifyIdToken } from '../../firebaseAuth';
+import { getUserAlert, verifyIdToken } from '../../../firebaseAuth';
 import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import nookies from 'nookies';
-import firebaseClient from '../../firebaseClient';
+import firebaseClient from '../../../firebaseClient';
 import firebase from 'firebase/app';
 import 'firebase/auth';
 
-import Layout from '../../components/Layout';
+import Layout from '../../../components/Layout';
 
 import { makeStyles } from '@material-ui/core/styles';
 import { Button, Typography, Divider } from '@material-ui/core';
 import { useEffect } from 'react';
-import { Gauge } from '../../types';
-import EditAlertForm from '../../components/EditAlertForm';
+import { Alert, Gauge } from '../../../types';
+import EditAlertForm from '../../../components/EditAlertForm';
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -35,22 +35,23 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 type Props = {
+  alert: Alert | null;
   session: { uid: string } | null;
 };
 
-const CreateAlert = ({ session }: Props): ReactElement => {
+const EditAlert = ({ session, alert }: Props): ReactElement => {
   const classes = useStyles();
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
+  const [title, setTitle] = useState(alert?.name || '');
+  const [description, setDescription] = useState(alert?.description || '');
   const [gauges, setGauges] = useState<Gauge[]>([]);
-  const [selectedGauge, setSelectedGauge] = useState<Gauge | null>(null);
-  const [operation, setOperation] = useState('greater-than');
-  const [value, setValue] = useState<number | null>(null);
-  const [units, setUnits] = useState('Cumecs');
-  const [email, setEmail] = useState(false);
-  const [sms, setSms] = useState(false);
+  const [selectedGauge, setSelectedGauge] = useState<Gauge | null>(alert?.gauge || null);
+  const [operation, setOperation] = useState(alert?.threshold.operation || 'greater-than');
+  const [value, setValue] = useState<number | null>(alert?.threshold.value || null);
+  const [units, setUnits] = useState(alert?.threshold.units || 'Cumecs');
+  const [email, setEmail] = useState(alert?.contactPreference.email || false);
+  const [sms, setSms] = useState(alert?.contactPreference.sms || false);
 
   firebaseClient();
 
@@ -88,7 +89,13 @@ const CreateAlert = ({ session }: Props): ReactElement => {
   };
 
   const handleOperationSelect = (event: ChangeEvent<{ value: unknown }>): void => {
-    if (typeof event.target.value === 'string') setOperation(event.target.value);
+    const opVal = event.target.value;
+    if (
+      typeof opVal === 'string' &&
+      (opVal === 'greater-than' || opVal === 'less-than' || opVal === 'equals')
+    ) {
+      setOperation(event.target.value);
+    }
   };
 
   const handleUnitsSelect = (event: ChangeEvent<{ value: unknown }>): void => {
@@ -100,16 +107,16 @@ const CreateAlert = ({ session }: Props): ReactElement => {
     setValue(val);
   };
 
-  const handleCreate = (event: MouseEvent): void => {
+  const handleEdit = (event: MouseEvent): void => {
     event.preventDefault();
-    if (session) {
+    if (session && alert) {
       firebase
         .firestore()
         .collection('users')
         .doc(session.uid)
         .collection('alerts')
-        .doc()
-        .set({
+        .doc(alert.id)
+        .update({
           name: title,
           description: description,
           gauge: selectedGauge,
@@ -126,7 +133,8 @@ const CreateAlert = ({ session }: Props): ReactElement => {
         .then(() => {
           router.push('/alerts');
         })
-        .catch(() => {
+        .catch((err) => {
+          console.log(err);
           enqueueSnackbar('Something went wrong.', {
             variant: 'error',
           });
@@ -135,10 +143,10 @@ const CreateAlert = ({ session }: Props): ReactElement => {
   };
 
   return (
-    <Layout title="Create Alert">
+    <Layout title="Edit Alert">
       <div className={classes.container}>
         <Typography variant="h5" className={classes.header}>
-          Create Alert
+          Edit Alert
         </Typography>
         <Divider />
         <EditAlertForm
@@ -146,7 +154,7 @@ const CreateAlert = ({ session }: Props): ReactElement => {
           title={title}
           description={description}
           handleGaugeSelect={handleGaugeSelect}
-          gaugeId={null}
+          gaugeId={alert?.gauge.id || ''}
           gauges={gauges}
           handleOperationSelect={handleOperationSelect}
           operation={operation}
@@ -170,12 +178,12 @@ const CreateAlert = ({ session }: Props): ReactElement => {
           <Button
             variant="contained"
             color="secondary"
-            form="create-alert"
+            form="edit-alert"
             type="submit"
             className={classes.primaryButton}
-            onClick={handleCreate}
+            onClick={handleEdit}
           >
-            Create Alert
+            Edit Alert
           </Button>
         </div>
       </div>
@@ -183,18 +191,28 @@ const CreateAlert = ({ session }: Props): ReactElement => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
+export const getServerSideProps: GetServerSideProps = async (
+  context
+): Promise<{ props: Props }> => {
   try {
+    const alertId = context.params?.alertId;
     const cookies = nookies.get(context);
     const token = await verifyIdToken(cookies.token);
     const { uid } = token;
 
-    return { props: { session: { uid } } };
+    if (typeof alertId === 'string') {
+      const alert = await getUserAlert(uid, alertId);
+      return {
+        props: { alert, session: { uid } },
+      };
+    }
+
+    return { props: { alert: null, session: null } };
   } catch (err) {
     context.res.writeHead(302, { location: '/login' });
     context.res.end();
-    return { props: { session: null } };
+    return { props: { alert: null, session: null } };
   }
 };
 
-export default CreateAlert;
+export default EditAlert;

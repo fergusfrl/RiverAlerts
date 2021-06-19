@@ -1,4 +1,4 @@
-import { ReactElement, useMemo } from 'react';
+import { ReactElement, useState, useEffect } from 'react';
 import { verifyIdToken, getUserAlerts } from '../firebaseAuth';
 import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
@@ -38,30 +38,32 @@ type Props = {
 const AlertsPage = ({ alerts }: Props): ReactElement => {
   const classes = useStyles();
   const router = useRouter();
+  const [selectedAlert, setSelectedAlert] = useState<Alert | null>(null);
   const {
     query: { alertId },
   } = router;
 
-  const selectedAlertId = typeof alertId === 'string' ? alertId : null;
-
-  const selectedAlert = useMemo(
-    () => alerts?.find((alert) => alert.id === alertId),
-    [alerts, alertId]
-  );
+  useEffect(() => {
+    const alert = alerts?.find((alert) => alert.id === alertId);
+    setSelectedAlert(alert || null);
+  }, [alerts, alertId]);
 
   const renderNotSelected = (): ReactElement => (
     <div className={classes.center}>
       <NotificationsIcon />
       <Typography>Select an alert to view</Typography>
-      {alertId && <div>{`fetch details for alert with id: ${alertId}`}</div>}
     </div>
   );
 
   return (
     <Layout title="Alerts">
-      {alerts && <AlertList alerts={alerts} selectedId={selectedAlertId} />}
+      {alerts && <AlertList alerts={alerts} selectedId={selectedAlert?.id || null} />}
       <div className={classes.container}>
-        {alertId ? <AlertDisplay alert={selectedAlert} /> : renderNotSelected()}
+        {alertId ? (
+          <AlertDisplay alert={selectedAlert} onDelete={() => setSelectedAlert(null)} />
+        ) : (
+          renderNotSelected()
+        )}
       </div>
     </Layout>
   );
