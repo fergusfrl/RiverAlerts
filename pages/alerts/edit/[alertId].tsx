@@ -88,7 +88,7 @@ const EditAlert = ({ session, alert }: Props): ReactElement => {
     setSelectedGauge(gauge);
   };
 
-  const handleOperationSelect = (event: ChangeEvent<{ value: unknown }>): void => {
+  const handleOperationSelect = (event: ChangeEvent<{ value: any }>): void => {
     const opVal = event.target.value;
     if (
       typeof opVal === 'string' &&
