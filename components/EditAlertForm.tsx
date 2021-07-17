@@ -29,6 +29,7 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     flexWrap: 'wrap',
     alignItems: 'center',
+    marginBottom: theme.spacing(2),
   },
   valueInput: {
     width: theme.spacing(10),
@@ -52,6 +53,12 @@ const useStyles = makeStyles((theme) => ({
   },
   primaryButton: {
     marginLeft: theme.spacing(),
+  },
+  alertSelection: {
+    marginTop: theme.spacing(2),
+  },
+  input: {
+    marginBottom: theme.spacing(2),
   },
 }));
 
@@ -102,8 +109,8 @@ const EditAlertForm = ({
         id="title"
         onChange={handleChange}
         value={title}
+        className={classes.input}
       />
-      <br />
       <TextField
         variant="outlined"
         label="Description"
@@ -112,8 +119,8 @@ const EditAlertForm = ({
         rows={3}
         onChange={handleChange}
         value={description}
+        className={classes.input}
       />
-      <br />
       <div className={classes.threshold}>
         <div className={classes.gridItem}>
           <Typography variant="body1" color="primary" style={{ whiteSpace: 'nowrap' }}>
@@ -177,10 +184,8 @@ const EditAlertForm = ({
           </Select>
         </div>
       </div>
-      <br />
       <Divider />
-      <br />
-      <div>
+      <div className={classes.alertSelection}>
         <Typography variant="body1" color="primary" className={classes.contactInfoLabel}>
           Alert me by:
         </Typography>

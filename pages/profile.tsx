@@ -33,6 +33,7 @@ const useStyles = makeStyles((theme) => ({
   name: {
     display: 'flex',
     justifyContent: 'space-between',
+    margin: theme.spacing(2, 0),
   },
   nameField: {
     width: '48%',
@@ -45,6 +46,9 @@ const useStyles = makeStyles((theme) => ({
   },
   logoutButton: {
     maxWidth: 100,
+  },
+  emailInput: {
+    marginBottom: theme.spacing(2),
   },
 }));
 
@@ -139,7 +143,6 @@ const ProfilePage = ({ user, session }: Props): ReactElement => {
           </Typography>
           <Divider />
           <form className={classes.form} id="user-info">
-            <br />
             <div className={classes.name}>
               <TextField
                 variant="outlined"
@@ -158,15 +161,14 @@ const ProfilePage = ({ user, session }: Props): ReactElement => {
                 className={classes.nameField}
               />
             </div>
-            <br />
             <TextField
               variant="outlined"
               label="Email"
               id="email"
               onChange={handleChange}
               value={email}
+              className={classes.emailInput}
             />
-            <br />
           </form>
           <div className={classes.buttonGroup}>
             <Button disabled={!isDirty} onClick={handleClear}>

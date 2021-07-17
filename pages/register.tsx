@@ -36,6 +36,9 @@ const useStyles = makeStyles((theme) => ({
   cardActions: {
     float: 'right',
   },
+  emailInput: {
+    marginBottom: theme.spacing(2),
+  },
 }));
 
 const RegisterPage = (): ReactElement => {
@@ -96,8 +99,8 @@ const RegisterPage = (): ReactElement => {
               required
               onChange={handleChange}
               disabled={isAuthenticating}
+              className={classes.emailInput}
             />
-            <br />
             <TextField
               value={password}
               label="Password"
