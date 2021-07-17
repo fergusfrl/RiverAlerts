@@ -50,8 +50,8 @@ const EditAlert = ({ session, alert }: Props): ReactElement => {
   const [operation, setOperation] = useState(alert?.threshold.operation || 'greater-than');
   const [value, setValue] = useState<number | null>(alert?.threshold.value || null);
   const [units, setUnits] = useState(alert?.threshold.units || 'Cumecs');
-  const [email, setEmail] = useState(alert?.contactPreference.email || false);
-  const [sms, setSms] = useState(alert?.contactPreference.sms || false);
+  const [email, setEmail] = useState(alert?.contactPreference.email || '');
+  const [includeEmail, setIncludeEmail] = useState(alert?.contactPreference.includeEmail || false);
 
   firebaseClient();
 
@@ -107,6 +107,10 @@ const EditAlert = ({ session, alert }: Props): ReactElement => {
     setValue(val);
   };
 
+  const handleEmailChange = (event: ChangeEvent<HTMLInputElement>): void => {
+    setEmail(event.target.value);
+  };
+
   const handleEdit = (event: MouseEvent): void => {
     event.preventDefault();
     if (session && alert) {
@@ -127,7 +131,7 @@ const EditAlert = ({ session, alert }: Props): ReactElement => {
           },
           contactPreference: {
             email,
-            sms,
+            includeEmail,
           },
         })
         .then(() => {
@@ -163,9 +167,9 @@ const EditAlert = ({ session, alert }: Props): ReactElement => {
           handleValueChange={handleValueChange}
           value={value}
           email={email}
-          setEmail={setEmail}
-          sms={sms}
-          setSms={setSms}
+          handleEmailChange={handleEmailChange}
+          includeEmail={includeEmail}
+          setIncludeEmail={setIncludeEmail}
         />
         <div className={classes.buttonGroup}>
           <Button

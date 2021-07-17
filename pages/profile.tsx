@@ -70,7 +70,6 @@ const ProfilePage = ({ user, session }: Props): ReactElement => {
   const [firstName, setFirstName] = useState(user?.name.first || '');
   const [lastName, setLastName] = useState(user?.name.last || '');
   const [email, setEmail] = useState(user?.email || '');
-  const [phoneNumber, setPhoneNumber] = useState(user?.phoneNumber || '');
 
   const handleLogout = (): void => {
     setIsLoggingOut(true);
@@ -91,7 +90,6 @@ const ProfilePage = ({ user, session }: Props): ReactElement => {
     if (id === 'firstName') setFirstName(value);
     if (id === 'lastName') setLastName(value);
     if (id === 'email') setEmail(value);
-    if (id === 'phoneNumber') setPhoneNumber(value);
   };
 
   const handleUpdate = (event: MouseEvent): void => {
@@ -107,7 +105,6 @@ const ProfilePage = ({ user, session }: Props): ReactElement => {
             last: lastName,
           },
           email,
-          phoneNumber,
         })
         .then(() => {
           enqueueSnackbar('Successfully updated information', {
@@ -130,7 +127,6 @@ const ProfilePage = ({ user, session }: Props): ReactElement => {
     setFirstName(user?.name.first);
     setLastName(user?.name.last);
     setEmail(user.email);
-    setPhoneNumber(user.phoneNumber);
     setIsDirty(false);
   };
 
@@ -169,16 +165,6 @@ const ProfilePage = ({ user, session }: Props): ReactElement => {
               id="email"
               onChange={handleChange}
               value={email}
-              helperText="This is the email address which will be used to contact you when a River Alert is raised."
-            />
-            <br />
-            <TextField
-              variant="outlined"
-              label="Phone Number"
-              id="phoneNumber"
-              onChange={handleChange}
-              value={phoneNumber}
-              helperText="This is the phone number which will be used to contact you when a River Alert is raised."
             />
             <br />
           </form>

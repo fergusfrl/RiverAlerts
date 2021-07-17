@@ -49,8 +49,8 @@ const CreateAlert = ({ session }: Props): ReactElement => {
   const [operation, setOperation] = useState('greater-than');
   const [value, setValue] = useState<number | null>(null);
   const [units, setUnits] = useState('Cumecs');
-  const [email, setEmail] = useState(false);
-  const [sms, setSms] = useState(false);
+  const [email, setEmail] = useState('');
+  const [includeEmail, setIncludeEmail] = useState(true);
 
   firebaseClient();
 
@@ -100,6 +100,10 @@ const CreateAlert = ({ session }: Props): ReactElement => {
     setValue(val);
   };
 
+  const handleEmailChange = (event: ChangeEvent<HTMLInputElement>): void => {
+    setEmail(event.target.value);
+  };
+
   const handleCreate = (event: MouseEvent): void => {
     event.preventDefault();
     if (session) {
@@ -120,7 +124,7 @@ const CreateAlert = ({ session }: Props): ReactElement => {
           },
           contactPreference: {
             email,
-            sms,
+            includeEmail,
           },
         })
         .then(() => {
@@ -155,9 +159,9 @@ const CreateAlert = ({ session }: Props): ReactElement => {
           handleValueChange={handleValueChange}
           value={value}
           email={email}
-          setEmail={setEmail}
-          sms={sms}
-          setSms={setSms}
+          handleEmailChange={handleEmailChange}
+          includeEmail={includeEmail}
+          setIncludeEmail={setIncludeEmail}
         />
         <div className={classes.buttonGroup}>
           <Button

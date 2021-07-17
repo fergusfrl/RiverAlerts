@@ -75,8 +75,8 @@ type Threshold = {
 };
 
 type ContactPreference = {
-  email: boolean;
-  sms: boolean;
+  email: string;
+  includeEmail: boolean;
 };
 
 export type Alert = {

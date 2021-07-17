@@ -7,7 +7,7 @@ import firebase from 'firebase/app';
 import 'firebase/auth';
 
 import { useAuth } from '../auth';
-import { Alert, GaugeData, User } from '../types';
+import { Alert, GaugeData } from '../types';
 import TimeSeriesGraph from './TimeSeriesGraph';
 
 import { makeStyles } from '@material-ui/core/styles';
@@ -93,7 +93,7 @@ const AlertDisplay = ({ alert, onDelete }: Props): ReactElement => {
   const classes = useStyles();
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
-  const { userInfo, user }: { userInfo: User | null; user: firebase.User | null } = useAuth();
+  const { user }: { user: firebase.User | null } = useAuth();
   const [liveData, setLiveData] = useState<GaugeData | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
@@ -195,22 +195,12 @@ const AlertDisplay = ({ alert, onDelete }: Props): ReactElement => {
         to:{' '}
       </Typography>
       <span className={classes.chips}>
-        {alert?.contactPreference?.email && (
+        {alert?.contactPreference?.includeEmail && (
           <Chip
             className={classes.chip}
             label={
               <>
-                Email: <strong>{userInfo?.email}</strong>
-              </>
-            }
-          />
-        )}
-        {alert?.contactPreference?.sms && (
-          <Chip
-            className={classes.chip}
-            label={
-              <>
-                Phone Number: <strong>{userInfo?.phoneNumber}</strong>
+                Email: <strong>{alert?.contactPreference.email}</strong>
               </>
             }
           />

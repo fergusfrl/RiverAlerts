@@ -1,5 +1,4 @@
 import { ReactElement, ChangeEvent } from 'react';
-import Link from 'next/link';
 
 import { makeStyles } from '@material-ui/core/styles';
 import {
@@ -45,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
   },
   contactInfoLabel: {
-    marginRight: theme.spacing(2),
+    marginBottom: theme.spacing(1),
   },
   buttonGroup: {
     marginTop: theme.spacing(2),
@@ -69,10 +68,10 @@ type Props = {
   value: number | null;
   handleUnitsSelect: (event: ChangeEvent<{ value: unknown }>) => void;
   units: string;
-  email: boolean;
-  setEmail: (val: boolean) => void;
-  sms: boolean;
-  setSms: (val: boolean) => void;
+  handleEmailChange: (event: ChangeEvent<HTMLInputElement>) => void;
+  email: string;
+  setIncludeEmail: (includeEmail: boolean) => void;
+  includeEmail: boolean;
 };
 
 const EditAlertForm = ({
@@ -89,11 +88,12 @@ const EditAlertForm = ({
   handleUnitsSelect,
   units,
   email,
-  setEmail,
-  sms,
-  setSms,
+  handleEmailChange,
+  includeEmail,
+  setIncludeEmail,
 }: Props): ReactElement => {
   const classes = useStyles();
+
   return (
     <form className={classes.form} id="create-alert">
       <TextField
@@ -181,21 +181,27 @@ const EditAlertForm = ({
       <Divider />
       <br />
       <div>
-        <Typography variant="caption">
-          Email address and contact phone number can be configured in your{' '}
-          <Link href="/profile">user profile</Link>
+        <Typography variant="body1" color="primary" className={classes.contactInfoLabel}>
+          Alert me by:
         </Typography>
         <div className={classes.contactInfo}>
-          <Typography variant="body1" color="primary" className={classes.contactInfoLabel}>
-            Alert me by:
-          </Typography>
           <FormControlLabel
-            control={<Checkbox name="email" checked={email} onChange={() => setEmail(!email)} />}
+            control={
+              <Checkbox
+                name="email"
+                checked={includeEmail}
+                onChange={() => setIncludeEmail(!includeEmail)}
+              />
+            }
             label="Email"
           />
-          <FormControlLabel
-            control={<Checkbox name="sms" checked={sms} onChange={() => setSms(!sms)} />}
-            label="SMS"
+          <TextField
+            size="small"
+            disabled={!includeEmail}
+            variant="outlined"
+            label="Email address"
+            value={email}
+            onChange={handleEmailChange}
           />
         </div>
       </div>
