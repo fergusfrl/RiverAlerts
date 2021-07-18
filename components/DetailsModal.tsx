@@ -1,7 +1,5 @@
 import { useEffect, ReactElement, useState, forwardRef } from 'react';
 import { useRouter } from 'next/router';
-import firebase from 'firebase/app';
-import { useAuth } from '../auth';
 import axios from 'axios';
 
 import TimeSeriesGraph from './TimeSeriesGraph';
@@ -25,7 +23,6 @@ import {
 import { TransitionProps } from '@material-ui/core/transitions';
 import CloseIcon from '@material-ui/icons/Close';
 import PlaceOutlinedIcon from '@material-ui/icons/PlaceOutlined';
-import AddAlertIcon from '@material-ui/icons/AddAlert';
 
 import { Gauge, GaugeData } from '../types/index';
 
@@ -71,7 +68,6 @@ const DetailsModal = ({ gaugeData }: Props): ReactElement => {
   const classes = useStyles();
   const router = useRouter();
   const theme = useTheme();
-  const { user }: { user: firebase.User | null } = useAuth();
   const matches = useMediaQuery(theme.breakpoints.down('xs'));
   const {
     query: { gaugeId },
@@ -130,13 +126,13 @@ const DetailsModal = ({ gaugeData }: Props): ReactElement => {
           }
           action={
             <>
-              <IconButton
+              {/* <IconButton
                 color="secondary"
                 disabled={!user}
                 onClick={() => router.push('./alerts/create')}
               >
                 <AddAlertIcon />
-              </IconButton>
+              </IconButton> */}
               <IconButton onClick={() => router.push('/')}>
                 <CloseIcon />
               </IconButton>
