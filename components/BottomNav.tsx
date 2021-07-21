@@ -11,7 +11,7 @@ const useStyles = makeStyles((theme) => ({
     position: 'fixed',
     width: '100%',
     bottom: 0,
-    backgroundColor: 'red', // theme.palette.primary.main,
+    backgroundColor: theme.palette.primary.main,
     zIndex: theme.zIndex.drawer + 1,
   },
   navItem: {
