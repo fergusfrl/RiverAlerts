@@ -112,8 +112,7 @@ const CreateAlert = ({ session }: Props): ReactElement => {
         .collection('users')
         .doc(session.uid)
         .collection('alerts')
-        .doc()
-        .set({
+        .add({
           name: title,
           description: description,
           gauge: selectedGauge,
@@ -127,10 +126,11 @@ const CreateAlert = ({ session }: Props): ReactElement => {
             includeEmail,
           },
         })
-        .then(() => {
-          router.push('/alerts');
+        .then((docRef) => {
+          router.push(`/alerts/${docRef.id}`);
         })
         .catch(() => {
+          // TODO: handle if there are too many alerts - note user shouldn't be able to navigate to this page anyway so generic error is probably ok
           enqueueSnackbar('Something went wrong.', {
             variant: 'error',
           });

@@ -155,6 +155,10 @@ const AlertList = ({ alerts, selectedId }: Props): ReactElement => {
       );
     });
 
+  const renderMaxAlertsMessage = (): ReactElement => (
+    <p className={classes.center}>Max of 3 alerts.</p>
+  );
+
   const renderAlertsNotFound = (): ReactElement => (
     <p className={classes.center}>No alerts found.</p>
   );
@@ -164,8 +168,10 @@ const AlertList = ({ alerts, selectedId }: Props): ReactElement => {
       <SearchBar handleSearch={setSearchString} placeholder="Search Alerts" />
       {alerts.length === 0 && renderEmptyList()}
       {alerts.length > 0 && renderAlerts()}
+      {alerts.length >= 3 && renderMaxAlertsMessage()}
       {alerts.length > 0 && filteredAlerts.length === 0 && renderAlertsNotFound()}
       <Fab
+        disabled={alerts.length >= 3}
         color="secondary"
         variant="extended"
         className={classes.fab}
