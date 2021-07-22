@@ -42,9 +42,16 @@ type Props = {
   handleSearch: (searchString: string) => void;
   toggleViewType: () => void;
   viewType: string;
+  isLoading: boolean;
 };
 
-const GaugeList = ({ gauges, handleSearch, toggleViewType, viewType }: Props): ReactElement => {
+const GaugeList = ({
+  gauges,
+  handleSearch,
+  toggleViewType,
+  viewType,
+  isLoading,
+}: Props): ReactElement => {
   const { user }: { user: firebase.User | null } = useAuth();
   const classes = useStyles();
 
@@ -72,9 +79,13 @@ const GaugeList = ({ gauges, handleSearch, toggleViewType, viewType }: Props): R
       />
       {viewType === 'LIST_VIEW' ? (
         <List classes={{ root: classes.list }}>
-          {groupByRegionAndRiver(gauges).map((region: RegionGroup) => (
-            <GaugeListItem region={region} key={region.region} />
-          ))}
+          {isLoading ? (
+            <p>loading...</p>
+          ) : (
+            groupByRegionAndRiver(gauges).map((region: RegionGroup) => (
+              <GaugeListItem region={region} key={region.region} />
+            ))
+          )}
         </List>
       ) : (
         <GaugeMap gauges={gauges} />

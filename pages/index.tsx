@@ -11,20 +11,38 @@ import DetailsModal from '../components/DetailsModal';
 
 import { useTheme } from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
+import { useEffect } from 'react';
 
 const LIST_VIEW = 'LIST_VIEW';
 const MAP_VIEW = 'MAP_VIEW';
 
-type Props = {
-  gauges: Gauge[];
-};
-
-const IndexPage = ({ gauges }: Props): ReactElement => {
+const IndexPage = (): ReactElement => {
   const [searchString, setSearchString] = useState('');
   const [viewType, setViewType] = useState(LIST_VIEW);
+  const [isLoading, setIsLoading] = useState(false);
+  const [gauges, setGauges] = useState<Gauge[]>([]);
   const router = useRouter();
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('xs'));
+
+  useEffect(() => {
+    setIsLoading(true);
+    axios
+      .post('https://data.riverguide.co.nz/', {
+        action: 'get_features',
+        crossDomain: true,
+        filters: ['flow', 'stage_height'],
+      })
+      .then((response) => {
+        setGauges(response.data.features);
+      })
+      .catch(() => {
+        // TODO: enqueue error snackbar
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }, []);
 
   const handleSearch = debounce((value: string) => {
     setSearchString(value);
@@ -55,22 +73,12 @@ const IndexPage = ({ gauges }: Props): ReactElement => {
         handleSearch={handleSearch}
         toggleViewType={toggleViewType}
         viewType={viewType}
+        isLoading={isLoading}
       />
       {!matches && <GaugeMap gauges={filterGauges} />}
       <DetailsModal gaugeData={gauges.find((gauge) => gauge.id === router.query.gaugeId)} />
     </Layout>
   );
-};
-
-export const getServerSideProps = async (): Promise<{ props: Props }> => {
-  const response = await axios.post('https://data.riverguide.co.nz/', {
-    action: 'get_features',
-    crossDomain: true,
-    filters: ['flow', 'stage_height'],
-  });
-  const data = response.data;
-
-  return { props: { gauges: data.features } };
 };
 
 export default IndexPage;
