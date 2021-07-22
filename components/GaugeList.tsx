@@ -10,7 +10,7 @@ import SearchBar from './SearchBar';
 import GaugeMap from './GaugeMap';
 
 import { makeStyles } from '@material-ui/core/styles';
-import { Button, Drawer, List } from '@material-ui/core';
+import { Button, Drawer, List, CircularProgress } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
   drawer: {
@@ -34,6 +34,11 @@ const useStyles = makeStyles((theme) => ({
   },
   registerButton: {
     marginBottom: theme.spacing(1),
+  },
+  throbber: {
+    display: 'flex',
+    justifyContent: 'center',
+    marginTop: theme.spacing(4),
   },
 }));
 
@@ -80,7 +85,9 @@ const GaugeList = ({
       {viewType === 'LIST_VIEW' ? (
         <List classes={{ root: classes.list }}>
           {isLoading ? (
-            <p>loading...</p>
+            <div className={classes.throbber}>
+              <CircularProgress size={20} />
+            </div>
           ) : (
             groupByRegionAndRiver(gauges).map((region: RegionGroup) => (
               <GaugeListItem region={region} key={region.region} />

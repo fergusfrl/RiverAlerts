@@ -10,6 +10,7 @@ import {
   CardActionArea,
   CardContent,
   CardHeader,
+  CircularProgress,
   Drawer,
   Fab,
   Grid,
@@ -75,6 +76,11 @@ const useStyles = makeStyles((theme) => ({
   warningIcon: {
     marginRight: theme.spacing(1),
   },
+  throbber: {
+    display: 'flex',
+    justifyContent: 'center',
+    marginTop: theme.spacing(4),
+  },
 }));
 
 const getOperationTranslation = (operation: string): string => {
@@ -88,9 +94,10 @@ const getOperationTranslation = (operation: string): string => {
 type Props = {
   alerts: Alert[];
   selectedId: string | null;
+  isLoading: boolean;
 };
 
-const AlertList = ({ alerts, selectedId }: Props): ReactElement => {
+const AlertList = ({ alerts, selectedId, isLoading }: Props): ReactElement => {
   const classes = useStyles();
   const router = useRouter();
   const [searchString, setSearchString] = useState<string | null>(null);
@@ -178,10 +185,15 @@ const AlertList = ({ alerts, selectedId }: Props): ReactElement => {
   return (
     <Drawer variant="permanent" classes={{ root: classes.drawer, paper: classes.drawer }}>
       <SearchBar handleSearch={setSearchString} placeholder="Search Alerts" />
-      {alerts.length === 0 && renderEmptyList()}
-      {alerts.length > 0 && renderAlerts()}
-      {alerts.length >= 3 && renderMaxAlertsMessage()}
-      {alerts.length > 0 && filteredAlerts.length === 0 && renderAlertsNotFound()}
+      {isLoading && (
+        <div className={classes.throbber}>
+          <CircularProgress size={20} />
+        </div>
+      )}
+      {!isLoading && alerts.length === 0 && renderEmptyList()}
+      {!isLoading && alerts.length > 0 && renderAlerts()}
+      {!isLoading && alerts.length >= 3 && renderMaxAlertsMessage()}
+      {!isLoading && alerts.length > 0 && filteredAlerts.length === 0 && renderAlertsNotFound()}
       <Fab
         size="large"
         disabled={alerts.length >= 3}

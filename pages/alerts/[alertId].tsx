@@ -90,11 +90,11 @@ const AlertPage = (): ReactElement => {
 
   return (
     <Layout title={selectedAlert?.name}>
-      {alerts && <AlertList alerts={alerts} selectedId={selectedAlert?.id || null} />}
+      {alerts && (
+        <AlertList alerts={alerts} selectedId={selectedAlert?.id || null} isLoading={isLoading} />
+      )}
       <div className={classes.container}>
-        {isLoading ? (
-          <p>loading</p>
-        ) : selectedAlert?.id ? (
+        {selectedAlert?.id ? (
           <AlertDisplay alert={selectedAlert} onDelete={() => setSelectedAlert(null)} />
         ) : (
           renderNotSelected()
