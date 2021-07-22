@@ -61,12 +61,8 @@ type Props = {
 };
 
 const ProfilePage = ({ user, session }: Props): ReactElement => {
-  const router = useRouter();
-  if (!session) {
-    router.push('/');
-  }
-
   firebaseClient();
+  const router = useRouter();
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -103,13 +99,16 @@ const ProfilePage = ({ user, session }: Props): ReactElement => {
         .firestore()
         .collection('/users')
         .doc(session.uid)
-        .set({
-          name: {
-            first: firstName,
-            last: lastName,
+        .set(
+          {
+            name: {
+              first: firstName,
+              last: lastName,
+            },
+            email,
           },
-          email,
-        })
+          { merge: true }
+        )
         .then(() => {
           enqueueSnackbar('Successfully updated information', {
             variant: 'success',

@@ -1,7 +1,12 @@
-import { ReactElement, useState } from 'react';
+import { ReactElement, useState, useEffect } from 'react';
 import { GetServerSideProps } from 'next';
-import { verifyIdToken, getUserAlerts } from '../../firebaseAuth';
+import { verifyIdToken } from '../../firebaseAuth';
+import { useSnackbar } from 'notistack';
+import { useRouter } from 'next/router';
 import nookies from 'nookies';
+import firebaseClient from '../../firebaseClient';
+import firebase from 'firebase/app';
+import 'firebase/auth';
 
 import Layout from '../../components/Layout';
 import AlertList from '../../components/AlertList';
@@ -30,13 +35,53 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 type Props = {
-  selectedAlert: Alert | null;
-  alerts: Alert[] | null;
+  session: { uid: string } | null;
 };
 
-const AlertPage = ({ selectedAlert, alerts }: Props): ReactElement => {
+const AlertPage = ({ session }: Props): ReactElement => {
+  firebaseClient();
   const classes = useStyles();
-  const [selAlert, setSelAlert] = useState<Alert | null>(selectedAlert);
+  const router = useRouter();
+  const { enqueueSnackbar } = useSnackbar();
+  const [alerts, setAlerts] = useState<Alert[]>([]);
+  const [selectedAlert, setSelectedAlert] = useState<Alert | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const {
+    query: { alertId },
+  } = router;
+
+  useEffect(() => {
+    if (session) {
+      setIsLoading(true);
+      firebase
+        .firestore()
+        .collection('users')
+        .doc(session.uid)
+        .collection('alerts')
+        .get()
+        .then((querySnap) => {
+          const alertData = querySnap.docs.map((doc) => doc.data() as Alert);
+          const orderedAlerts = alertData.sort((a, b) => {
+            if (a.name > b.name) return 1;
+            if (a.name < b.name) return -1;
+            return 0;
+          });
+          setAlerts(orderedAlerts);
+
+          const alert = orderedAlerts.find((alert: Alert) => alert.id === alertId);
+          setSelectedAlert(alert || null);
+        })
+        .catch(() => {
+          enqueueSnackbar('Something went wrong getting your alerts.', {
+            variant: 'error',
+          });
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+    }
+  }, [alertId, enqueueSnackbar, session]);
 
   const renderNotSelected = (): ReactElement => (
     <div className={classes.center}>
@@ -47,10 +92,12 @@ const AlertPage = ({ selectedAlert, alerts }: Props): ReactElement => {
 
   return (
     <Layout title={selectedAlert?.name}>
-      {alerts && <AlertList alerts={alerts} selectedId={selAlert?.id || null} />}
+      {alerts && <AlertList alerts={alerts} selectedId={selectedAlert?.id || null} />}
       <div className={classes.container}>
-        {selAlert?.id ? (
-          <AlertDisplay alert={selectedAlert} onDelete={() => setSelAlert(null)} />
+        {isLoading ? (
+          <p>loading</p>
+        ) : selectedAlert?.id ? (
+          <AlertDisplay alert={selectedAlert} onDelete={() => setSelectedAlert(null)} />
         ) : (
           renderNotSelected()
         )}
@@ -63,26 +110,23 @@ export const getServerSideProps: GetServerSideProps = async (
   context
 ): Promise<{ props: Props }> => {
   try {
-    const alertId = context.params?.alertId;
     const cookies = nookies.get(context);
     const token = await verifyIdToken(cookies.token);
     const { uid } = token;
 
-    const alerts = await getUserAlerts(uid);
-    const selectedAlert = alerts.find((alert) => alert.id === alertId);
-    const sortedAlerts = alerts.sort((a, b) => {
-      if (a.name > b.name) return 1;
-      if (a.name < b.name) return -1;
-      return 0;
-    });
-
     return {
-      props: { selectedAlert: selectedAlert || null, alerts: sortedAlerts },
+      props: {
+        session: { uid },
+      },
     };
   } catch (err) {
     context.res.writeHead(302, { location: '/login' });
     context.res.end();
-    return { props: { alerts: null, selectedAlert: null } };
+    return {
+      props: {
+        session: null,
+      },
+    };
   }
 };
 

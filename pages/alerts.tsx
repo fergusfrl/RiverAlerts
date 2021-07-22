@@ -1,8 +1,11 @@
 import { ReactElement, useState, useEffect } from 'react';
-import { verifyIdToken, getUserAlerts } from '../firebaseAuth';
+import { verifyIdToken } from '../firebaseAuth';
 import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
+import { useSnackbar } from 'notistack';
 import nookies from 'nookies';
+import firebaseClient from '../firebaseClient';
+import firebase from 'firebase/app';
 import 'firebase/auth';
 
 import { Alert } from '../types';
@@ -32,21 +35,52 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 type Props = {
-  alerts: Alert[] | null;
+  session: { uid: string } | null;
 };
 
-const AlertsPage = ({ alerts }: Props): ReactElement => {
+const AlertsPage = ({ session }: Props): ReactElement => {
+  firebaseClient();
   const classes = useStyles();
   const router = useRouter();
+  const { enqueueSnackbar } = useSnackbar();
+  const [alerts, setAlerts] = useState<Alert[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [selectedAlert, setSelectedAlert] = useState<Alert | null>(null);
   const {
     query: { alertId },
   } = router;
 
   useEffect(() => {
-    const alert = alerts?.find((alert) => alert.id === alertId);
-    setSelectedAlert(alert || null);
-  }, [alerts, alertId]);
+    if (session) {
+      setIsLoading(true);
+      firebase
+        .firestore()
+        .collection('users')
+        .doc(session.uid)
+        .collection('alerts')
+        .get()
+        .then((querySnap) => {
+          const alertData = querySnap.docs.map((doc) => doc.data() as Alert);
+          const orderedAlerts = alertData.sort((a, b) => {
+            if (a.name > b.name) return 1;
+            if (a.name < b.name) return -1;
+            return 0;
+          });
+          setAlerts(orderedAlerts);
+
+          const alert = orderedAlerts.find((alert: Alert) => alert.id === alertId);
+          setSelectedAlert(alert || null);
+        })
+        .catch(() => {
+          enqueueSnackbar('Something went wrong getting your alerts.', {
+            variant: 'error',
+          });
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+    }
+  }, [session, alertId, enqueueSnackbar]);
 
   const renderNotSelected = (): ReactElement => (
     <div className={classes.center}>
@@ -59,7 +93,9 @@ const AlertsPage = ({ alerts }: Props): ReactElement => {
     <Layout title="Alerts">
       {alerts && <AlertList alerts={alerts} selectedId={selectedAlert?.id || null} />}
       <div className={classes.container}>
-        {alertId ? (
+        {isLoading ? (
+          <p>loading...</p>
+        ) : alertId ? (
           <AlertDisplay alert={selectedAlert} onDelete={() => setSelectedAlert(null)} />
         ) : (
           renderNotSelected()
@@ -77,21 +113,18 @@ export const getServerSideProps: GetServerSideProps = async (
     const token = await verifyIdToken(cookies.token);
     const { uid } = token;
 
-    const alerts = await getUserAlerts(uid);
-    const sortedAlerts = alerts.sort((a, b) => {
-      if (a.name > b.name) return 1;
-      if (a.name < b.name) return -1;
-      return 0;
-    });
-
     return {
-      props: { alerts: sortedAlerts || null },
+      props: {
+        session: { uid },
+      },
     };
   } catch (err) {
     context.res.writeHead(302, { location: '/login' });
     context.res.end();
     return {
-      props: { alerts: null },
+      props: {
+        session: null,
+      },
     };
   }
 };
