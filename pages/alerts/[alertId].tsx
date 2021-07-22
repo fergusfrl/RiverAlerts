@@ -1,9 +1,7 @@
 import { ReactElement, useState, useEffect } from 'react';
-import { GetServerSideProps } from 'next';
-import { verifyIdToken } from '../../firebaseAuth';
 import { useSnackbar } from 'notistack';
 import { useRouter } from 'next/router';
-import nookies from 'nookies';
+import { useAuth } from '../../auth';
 import firebaseClient from '../../firebaseClient';
 import firebase from 'firebase/app';
 import 'firebase/auth';
@@ -34,12 +32,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-type Props = {
-  session: { uid: string } | null;
-};
-
-const AlertPage = ({ session }: Props): ReactElement => {
+const AlertPage = (): ReactElement => {
   firebaseClient();
+  const { user }: { user: firebase.User | null } = useAuth();
   const classes = useStyles();
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
@@ -52,36 +47,39 @@ const AlertPage = ({ session }: Props): ReactElement => {
   } = router;
 
   useEffect(() => {
-    if (session) {
-      setIsLoading(true);
-      firebase
-        .firestore()
-        .collection('users')
-        .doc(session.uid)
-        .collection('alerts')
-        .get()
-        .then((querySnap) => {
-          const alertData = querySnap.docs.map((doc) => doc.data() as Alert);
-          const orderedAlerts = alertData.sort((a, b) => {
-            if (a.name > b.name) return 1;
-            if (a.name < b.name) return -1;
-            return 0;
-          });
-          setAlerts(orderedAlerts);
-
-          const alert = orderedAlerts.find((alert: Alert) => alert.id === alertId);
-          setSelectedAlert(alert || null);
-        })
-        .catch(() => {
-          enqueueSnackbar('Something went wrong getting your alerts.', {
-            variant: 'error',
-          });
-        })
-        .finally(() => {
-          setIsLoading(false);
-        });
+    if (!user) {
+      router.push('/login');
+      return;
     }
-  }, [alertId, enqueueSnackbar, session]);
+
+    setIsLoading(true);
+    firebase
+      .firestore()
+      .collection('users')
+      .doc(user.uid)
+      .collection('alerts')
+      .get()
+      .then((querySnap) => {
+        const alertData = querySnap.docs.map((doc) => doc.data() as Alert);
+        const orderedAlerts = alertData.sort((a, b) => {
+          if (a.name > b.name) return 1;
+          if (a.name < b.name) return -1;
+          return 0;
+        });
+        setAlerts(orderedAlerts);
+
+        const alert = orderedAlerts.find((alert: Alert) => alert.id === alertId);
+        setSelectedAlert(alert || null);
+      })
+      .catch(() => {
+        enqueueSnackbar('Something went wrong getting your alerts.', {
+          variant: 'error',
+        });
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }, [user, router, alertId, enqueueSnackbar]);
 
   const renderNotSelected = (): ReactElement => (
     <div className={classes.center}>
@@ -104,30 +102,6 @@ const AlertPage = ({ session }: Props): ReactElement => {
       </div>
     </Layout>
   );
-};
-
-export const getServerSideProps: GetServerSideProps = async (
-  context
-): Promise<{ props: Props }> => {
-  try {
-    const cookies = nookies.get(context);
-    const token = await verifyIdToken(cookies.token);
-    const { uid } = token;
-
-    return {
-      props: {
-        session: { uid },
-      },
-    };
-  } catch (err) {
-    context.res.writeHead(302, { location: '/login' });
-    context.res.end();
-    return {
-      props: {
-        session: null,
-      },
-    };
-  }
 };
 
 export default AlertPage;
