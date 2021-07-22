@@ -76,6 +76,10 @@ const CreateAlert = ({ session }: Props): ReactElement => {
       });
   }, [enqueueSnackbar]);
 
+  const formIsValid = (): boolean => {
+    return title !== '' && selectedGauge != null && value != null && email != '';
+  };
+
   const handleChange = (event: ChangeEvent<HTMLInputElement>): void => {
     const value = event.target.value;
     if (event.target.id === 'title') setTitle(value);
@@ -83,6 +87,7 @@ const CreateAlert = ({ session }: Props): ReactElement => {
   };
 
   const handleGaugeSelect = (event: ChangeEvent<{ value: unknown }>): void => {
+    console.log();
     const gauge = gauges.find((gauge) => gauge.id === event.target.value) || null;
     setSelectedGauge(gauge);
   };
@@ -130,7 +135,6 @@ const CreateAlert = ({ session }: Props): ReactElement => {
           router.push(`/alerts/${docRef.id}`);
         })
         .catch(() => {
-          // TODO: handle if there are too many alerts - note user shouldn't be able to navigate to this page anyway so generic error is probably ok
           enqueueSnackbar('Something went wrong.', {
             variant: 'error',
           });
@@ -150,7 +154,7 @@ const CreateAlert = ({ session }: Props): ReactElement => {
           title={title}
           description={description}
           handleGaugeSelect={handleGaugeSelect}
-          gaugeId={null}
+          gaugeId={selectedGauge?.id || null}
           gauges={gauges}
           handleOperationSelect={handleOperationSelect}
           operation={operation}
@@ -178,6 +182,7 @@ const CreateAlert = ({ session }: Props): ReactElement => {
             type="submit"
             className={classes.primaryButton}
             onClick={handleCreate}
+            disabled={!formIsValid()}
           >
             Create Alert
           </Button>

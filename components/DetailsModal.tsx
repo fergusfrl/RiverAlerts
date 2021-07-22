@@ -147,7 +147,7 @@ const DetailsModal = ({ gaugeData }: Props): ReactElement => {
           {stageHeigthData && stageHeigthData.length > 0 && (
             <TimeSeriesGraph
               data={stageHeigthData}
-              units="meters"
+              units="metres"
               gaugeSource={gaugeData?.data_source}
             />
           )}

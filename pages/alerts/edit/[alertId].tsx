@@ -47,11 +47,11 @@ const EditAlert = ({ session, alert }: Props): ReactElement => {
   const [description, setDescription] = useState(alert?.description || '');
   const [gauges, setGauges] = useState<Gauge[]>([]);
   const [selectedGauge, setSelectedGauge] = useState<Gauge | null>(alert?.gauge || null);
-  const [operation, setOperation] = useState(alert?.threshold.operation || 'greater-than');
-  const [value, setValue] = useState<number | null>(alert?.threshold.value || null);
-  const [units, setUnits] = useState(alert?.threshold.units || 'Cumecs');
-  const [email, setEmail] = useState(alert?.contactPreference.email || '');
-  const [includeEmail, setIncludeEmail] = useState(alert?.contactPreference.includeEmail || false);
+  const [operation, setOperation] = useState(alert?.threshold?.operation || 'greater-than');
+  const [value, setValue] = useState<number | null>(alert?.threshold?.value || null);
+  const [units, setUnits] = useState(alert?.threshold?.units || 'Cumecs');
+  const [email, setEmail] = useState(alert?.contactPreference?.email || '');
+  const [includeEmail, setIncludeEmail] = useState(alert?.contactPreference?.includeEmail || false);
 
   firebaseClient();
 
@@ -76,6 +76,10 @@ const EditAlert = ({ session, alert }: Props): ReactElement => {
         });
       });
   }, [enqueueSnackbar]);
+
+  const formIsValid = (): boolean => {
+    return title !== '' && selectedGauge != null && value != null && email != '';
+  };
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>): void => {
     const value = event.target.value;
@@ -158,7 +162,7 @@ const EditAlert = ({ session, alert }: Props): ReactElement => {
           title={title}
           description={description}
           handleGaugeSelect={handleGaugeSelect}
-          gaugeId={alert?.gauge.id || ''}
+          gaugeId={selectedGauge?.id || null}
           gauges={gauges}
           handleOperationSelect={handleOperationSelect}
           operation={operation}
@@ -186,6 +190,7 @@ const EditAlert = ({ session, alert }: Props): ReactElement => {
             type="submit"
             className={classes.primaryButton}
             onClick={handleEdit}
+            disabled={!formIsValid()}
           >
             Edit Alert
           </Button>

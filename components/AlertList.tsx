@@ -17,6 +17,7 @@ import {
 } from '@material-ui/core';
 import PlaceOutlinedIcon from '@material-ui/icons/PlaceOutlined';
 import AddIcon from '@material-ui/icons/AddAlert';
+import WarningIcon from '@material-ui/icons/Warning';
 
 const useStyles = makeStyles((theme) => ({
   drawer: {
@@ -65,6 +66,14 @@ const useStyles = makeStyles((theme) => ({
   },
   center: {
     alignSelf: 'center',
+  },
+  maxItemsMessage: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  warningIcon: {
+    marginRight: theme.spacing(1),
   },
 }));
 
@@ -156,11 +165,14 @@ const AlertList = ({ alerts, selectedId }: Props): ReactElement => {
     });
 
   const renderMaxAlertsMessage = (): ReactElement => (
-    <p className={classes.center}>Max of 3 alerts.</p>
+    <div className={classes.maxItemsMessage}>
+      <WarningIcon className={classes.warningIcon} />
+      <p>Max of 3 Alerts</p>
+    </div>
   );
 
   const renderAlertsNotFound = (): ReactElement => (
-    <p className={classes.center}>No alerts found.</p>
+    <p className={classes.center}>No Alerts Found</p>
   );
 
   return (
@@ -171,6 +183,7 @@ const AlertList = ({ alerts, selectedId }: Props): ReactElement => {
       {alerts.length >= 3 && renderMaxAlertsMessage()}
       {alerts.length > 0 && filteredAlerts.length === 0 && renderAlertsNotFound()}
       <Fab
+        size="large"
         disabled={alerts.length >= 3}
         color="secondary"
         variant="extended"

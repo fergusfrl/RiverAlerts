@@ -127,22 +127,24 @@ const EditAlertForm = ({
             Send me an Alert when
           </Typography>
         </div>
-        <div className={classes.gridItem}>
-          <Select
-            value={gaugeId}
-            defaultValue={0}
-            variant="outlined"
-            className={classes.inlineSelect}
-            placeholder="Gauge name"
-            onChange={handleGaugeSelect}
-          >
-            {gauges.map((gauge) => (
-              <MenuItem key={gauge.id} value={gauge.id}>
-                {gauge.name}
-              </MenuItem>
-            ))}
-          </Select>
-        </div>
+        {gauges.length > 0 && (
+          <div className={classes.gridItem}>
+            <Select
+              value={gaugeId || 1071105}
+              variant="outlined"
+              className={classes.inlineSelect}
+              placeholder="Gauge Name"
+              onChange={handleGaugeSelect}
+            >
+              {gauges.map((gauge) => (
+                <MenuItem key={gauge.id} value={gauge.id}>
+                  {gauge.name} | {gauge.river_name}
+                </MenuItem>
+              ))}
+            </Select>
+          </div>
+        )}
+
         <div className={classes.gridItem}>
           <Typography variant="body1" color="primary">
             Is

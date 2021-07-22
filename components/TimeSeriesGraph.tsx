@@ -41,7 +41,7 @@ const TimeSeriesGraph = ({ data, units, gaugeSource }: Props): ReactElement => {
       },
     ],
     title: {
-      text: units === 'cumecs' ? 'Flow (cumecs)' : 'Height (meters)',
+      text: units === 'cumecs' ? 'Flow (cumecs)' : 'Height (metres)',
       align: 'left',
     },
     subtitle: {

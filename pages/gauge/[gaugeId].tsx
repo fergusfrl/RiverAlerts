@@ -59,7 +59,7 @@ const GaugePage = ({ gaugeInfo, observations }: Props): ReactElement => {
           {stageHeigthData && stageHeigthData.length > 0 && (
             <TimeSeriesGraph
               data={stageHeigthData}
-              units="meters"
+              units="metres"
               gaugeSource={gaugeInfo.data_source}
             />
           )}

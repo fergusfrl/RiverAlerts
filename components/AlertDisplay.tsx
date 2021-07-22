@@ -218,7 +218,7 @@ const AlertDisplay = ({ alert, onDelete }: Props): ReactElement => {
         {stageHeigthData && stageHeigthData.length > 0 && (
           <TimeSeriesGraph
             data={stageHeigthData}
-            units="meters"
+            units="metres"
             gaugeSource={alert?.gauge.data_source}
           />
         )}

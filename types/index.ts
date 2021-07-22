@@ -26,7 +26,7 @@ type GaugeLocation = {
 type Observables = {
   latest_value: number;
   type: 'flow' | 'stage_height';
-  units: 'cumecs' | 'meters';
+  units: 'cumecs' | 'metres';
 };
 
 export type Gauge = {
