@@ -167,6 +167,7 @@ const ProfilePage = ({ user, session }: Props): ReactElement => {
               onChange={handleChange}
               value={email}
               className={classes.emailInput}
+              helperText="This is the email address which River Alerts will be sent to."
             />
           </form>
           <div className={classes.buttonGroup}>

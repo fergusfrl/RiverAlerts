@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 type Props = {
-  session: { uid: string } | null;
+  session: { uid: string; email: string } | null;
 };
 
 const CreateAlert = ({ session }: Props): ReactElement => {
@@ -49,7 +49,6 @@ const CreateAlert = ({ session }: Props): ReactElement => {
   const [operation, setOperation] = useState('greater-than');
   const [value, setValue] = useState<number | null>(null);
   const [units, setUnits] = useState('Cumecs');
-  const [email, setEmail] = useState('');
   const [includeEmail, setIncludeEmail] = useState(true);
 
   firebaseClient();
@@ -77,7 +76,7 @@ const CreateAlert = ({ session }: Props): ReactElement => {
   }, [enqueueSnackbar]);
 
   const formIsValid = (): boolean => {
-    return title !== '' && selectedGauge != null && value != null && email != '';
+    return title !== '' && selectedGauge != null && value != null && includeEmail;
   };
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>): void => {
@@ -105,10 +104,6 @@ const CreateAlert = ({ session }: Props): ReactElement => {
     setValue(val);
   };
 
-  const handleEmailChange = (event: ChangeEvent<HTMLInputElement>): void => {
-    setEmail(event.target.value);
-  };
-
   const handleCreate = (event: MouseEvent): void => {
     event.preventDefault();
     if (session) {
@@ -127,7 +122,7 @@ const CreateAlert = ({ session }: Props): ReactElement => {
             units,
           },
           contactPreference: {
-            email,
+            email: session.email,
             includeEmail,
           },
         })
@@ -162,8 +157,7 @@ const CreateAlert = ({ session }: Props): ReactElement => {
           units={units}
           handleValueChange={handleValueChange}
           value={value}
-          email={email}
-          handleEmailChange={handleEmailChange}
+          email={session?.email || ''}
           includeEmail={includeEmail}
           setIncludeEmail={setIncludeEmail}
         />
@@ -196,13 +190,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   try {
     const cookies = nookies.get(context);
     const token = await verifyIdToken(cookies.token);
-    const { uid } = token;
+    const { uid, email } = token;
 
-    return { props: { session: { uid } } };
+    return { props: { session: { uid, email } } };
   } catch (err) {
     context.res.writeHead(302, { location: '/login' });
     context.res.end();
-    return { props: { session: null } };
+    return { props: { session: null, email: null } };
   }
 };
 

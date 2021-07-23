@@ -36,7 +36,10 @@ const useStyles = makeStyles((theme) => ({
 
 type Props = {
   alert: Alert | null;
-  session: { uid: string } | null;
+  session: {
+    uid: string;
+    email: string;
+  } | null;
 };
 
 const EditAlert = ({ session, alert }: Props): ReactElement => {
@@ -50,7 +53,6 @@ const EditAlert = ({ session, alert }: Props): ReactElement => {
   const [operation, setOperation] = useState(alert?.threshold?.operation || 'greater-than');
   const [value, setValue] = useState<number | null>(alert?.threshold?.value || null);
   const [units, setUnits] = useState(alert?.threshold?.units || 'Cumecs');
-  const [email, setEmail] = useState(alert?.contactPreference?.email || '');
   const [includeEmail, setIncludeEmail] = useState(alert?.contactPreference?.includeEmail || false);
 
   firebaseClient();
@@ -78,7 +80,7 @@ const EditAlert = ({ session, alert }: Props): ReactElement => {
   }, [enqueueSnackbar]);
 
   const formIsValid = (): boolean => {
-    return title !== '' && selectedGauge != null && value != null && email != '';
+    return title !== '' && selectedGauge != null && value != null && includeEmail;
   };
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>): void => {
@@ -111,10 +113,6 @@ const EditAlert = ({ session, alert }: Props): ReactElement => {
     setValue(val);
   };
 
-  const handleEmailChange = (event: ChangeEvent<HTMLInputElement>): void => {
-    setEmail(event.target.value);
-  };
-
   const handleEdit = (event: MouseEvent): void => {
     event.preventDefault();
     if (session && alert) {
@@ -134,7 +132,7 @@ const EditAlert = ({ session, alert }: Props): ReactElement => {
             units,
           },
           contactPreference: {
-            email,
+            email: session.email,
             includeEmail,
           },
         })
@@ -170,8 +168,7 @@ const EditAlert = ({ session, alert }: Props): ReactElement => {
           units={units}
           handleValueChange={handleValueChange}
           value={value}
-          email={email}
-          handleEmailChange={handleEmailChange}
+          email={session?.email || ''}
           includeEmail={includeEmail}
           setIncludeEmail={setIncludeEmail}
         />
@@ -200,19 +197,17 @@ const EditAlert = ({ session, alert }: Props): ReactElement => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async (
-  context
-): Promise<{ props: Props }> => {
+export const getServerSideProps: GetServerSideProps = async (context) => {
   try {
     const alertId = context.params?.alertId;
     const cookies = nookies.get(context);
     const token = await verifyIdToken(cookies.token);
-    const { uid } = token;
+    const { uid, email } = token;
 
     if (typeof alertId === 'string') {
       const alert = await getUserAlert(uid, alertId);
       return {
-        props: { alert, session: { uid } },
+        props: { alert, session: { uid, email } },
       };
     }
 

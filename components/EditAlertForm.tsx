@@ -75,7 +75,6 @@ type Props = {
   value: number | null;
   handleUnitsSelect: (event: ChangeEvent<{ value: unknown }>) => void;
   units: string;
-  handleEmailChange: (event: ChangeEvent<HTMLInputElement>) => void;
   email: string;
   setIncludeEmail: (includeEmail: boolean) => void;
   includeEmail: boolean;
@@ -95,7 +94,6 @@ const EditAlertForm = ({
   handleUnitsSelect,
   units,
   email,
-  handleEmailChange,
   includeEmail,
   setIncludeEmail,
 }: Props): ReactElement => {
@@ -200,16 +198,9 @@ const EditAlertForm = ({
                 onChange={() => setIncludeEmail(!includeEmail)}
               />
             }
-            label="Email"
+            label="Email to:"
           />
-          <TextField
-            size="small"
-            disabled={!includeEmail}
-            variant="outlined"
-            label="Email address"
-            value={email}
-            onChange={handleEmailChange}
-          />
+          <Typography color={includeEmail ? 'textPrimary' : 'textSecondary'}>{email}</Typography>
         </div>
       </div>
     </form>
