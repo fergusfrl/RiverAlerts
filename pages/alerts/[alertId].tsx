@@ -67,9 +67,6 @@ const AlertPage = (): ReactElement => {
           return 0;
         });
         setAlerts(orderedAlerts);
-
-        const alert = orderedAlerts.find((alert: Alert) => alert.id === alertId);
-        setSelectedAlert(alert || null);
       })
       .catch(() => {
         enqueueSnackbar('Something went wrong getting your alerts.', {
@@ -79,7 +76,14 @@ const AlertPage = (): ReactElement => {
       .finally(() => {
         setIsLoading(false);
       });
-  }, [user, router, alertId, enqueueSnackbar]);
+  }, [user, router, enqueueSnackbar]);
+
+  useEffect(() => {
+    if (alerts.length > 0) {
+      const alert = alerts.find((alert: Alert) => alert.id === alertId);
+      setSelectedAlert(alert || null);
+    }
+  }, [alerts, alertId]);
 
   const renderNotSelected = (): ReactElement => (
     <div className={classes.center}>
@@ -90,9 +94,7 @@ const AlertPage = (): ReactElement => {
 
   return (
     <Layout title={selectedAlert?.name}>
-      {alerts && (
-        <AlertList alerts={alerts} selectedId={selectedAlert?.id || null} isLoading={isLoading} />
-      )}
+      <AlertList alerts={alerts} selectedId={selectedAlert?.id || null} isLoading={isLoading} />
       <div className={classes.container}>
         {selectedAlert?.id ? (
           <AlertDisplay alert={selectedAlert} onDelete={() => setSelectedAlert(null)} />

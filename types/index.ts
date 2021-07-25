@@ -86,4 +86,5 @@ export type Alert = {
   gauge: Gauge;
   threshold: Threshold;
   contactPreference: ContactPreference;
+  active: boolean;
 };

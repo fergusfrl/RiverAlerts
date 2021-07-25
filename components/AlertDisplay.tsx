@@ -27,6 +27,7 @@ import {
 import PlaceOutlinedIcon from '@material-ui/icons/PlaceOutlined';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
+import AlertActiveIcon from '@material-ui/icons/NotificationsActive';
 
 const useStyles = makeStyles((theme) => ({
   alert: {
@@ -38,9 +39,10 @@ const useStyles = makeStyles((theme) => ({
   titleWrapper: {
     display: 'flex',
     justifyContent: 'space-between',
+    alignItems: 'center',
   },
   title: {
-    marginTop: theme.spacing(),
+    margin: theme.spacing(1, 1, 0, 0),
   },
   subtitle: {
     display: 'flex',
@@ -72,6 +74,11 @@ const useStyles = makeStyles((theme) => ({
   },
   chip: {
     marginRight: theme.spacing(1),
+  },
+  titleAlertWrapper: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 }));
 
@@ -147,9 +154,19 @@ const AlertDisplay = ({ alert, onDelete }: Props): ReactElement => {
   return (
     <div className={classes.alert}>
       <div className={classes.titleWrapper}>
-        <Typography color="primary" variant="h5" className={classes.title}>
-          {alert?.name}
-        </Typography>
+        <div className={classes.titleAlertWrapper}>
+          <Typography color="primary" variant="h5" className={classes.title}>
+            {alert?.name}
+          </Typography>
+          {alert?.active && (
+            <Chip
+              color="secondary"
+              icon={<AlertActiveIcon color="primary" fontSize="small" />}
+              label="Active"
+            />
+          )}
+        </div>
+
         <div>
           <Tooltip title="Edit Alert">
             <IconButton

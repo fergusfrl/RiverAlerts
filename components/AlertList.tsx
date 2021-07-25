@@ -14,11 +14,13 @@ import {
   Drawer,
   Fab,
   Grid,
+  Tooltip,
   Typography,
 } from '@material-ui/core';
 import PlaceOutlinedIcon from '@material-ui/icons/PlaceOutlined';
 import AddIcon from '@material-ui/icons/AddAlert';
 import WarningIcon from '@material-ui/icons/Warning';
+import AlertActiveIcon from '@material-ui/icons/NotificationsActive';
 
 const useStyles = makeStyles((theme) => ({
   drawer: {
@@ -124,7 +126,7 @@ const AlertList = ({ alerts, selectedId, isLoading }: Props): ReactElement => {
           <Card className={isSelected ? classes.card : ''} elevation={isSelected ? 0 : 2}>
             <CardActionArea
               onClick={() => {
-                router.push(`alerts?alertId=${alert.id}`, `/alerts/${alert.id}`);
+                router.push(`/alerts/${alert.id}`);
               }}
             >
               <CardHeader
@@ -152,6 +154,13 @@ const AlertList = ({ alerts, selectedId, isLoading }: Props): ReactElement => {
                       {`${alert.gauge.name}, ${alert.gauge.river_name}`}
                     </Typography>
                   </Grid>
+                }
+                action={
+                  alert.active && (
+                    <Tooltip title="Alert is active">
+                      <AlertActiveIcon color="secondary" />
+                    </Tooltip>
+                  )
                 }
               />
               <CardContent className={classes.cardContent}>

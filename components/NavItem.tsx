@@ -39,6 +39,16 @@ const NavItem = ({ link, label, icon, disabled = false }: Props): ReactElement =
   const classes = useStyles();
   const router = useRouter();
 
+  const isSelected = (): boolean => {
+    if (router.pathname === '/' && link === '/') {
+      return true;
+    }
+    if (link === '/') {
+      return false;
+    }
+    return router.pathname.includes(link);
+  };
+
   return (
     <Link href={link}>
       <ListItem
@@ -51,7 +61,7 @@ const NavItem = ({ link, label, icon, disabled = false }: Props): ReactElement =
         alignItems="center"
         disabled={disabled}
         className={classes.listItem}
-        selected={router.pathname === link}
+        selected={isSelected()}
         classes={{
           selected: classes.selected,
         }}
