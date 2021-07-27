@@ -89,9 +89,8 @@ const EditAlert = ({ session, alert }: Props): ReactElement => {
     if (event.target.id === 'description') setDescription(value);
   };
 
-  const handleGaugeSelect = (event: ChangeEvent<{ value: unknown }>): void => {
-    const gauge = gauges.find((gauge) => gauge.id === event.target.value) || null;
-    setSelectedGauge(gauge);
+  const handleGaugeSelect = (_: ChangeEvent<unknown>, value: Gauge | null): void => {
+    setSelectedGauge(value);
   };
 
   const handleOperationSelect = (event: ChangeEvent<{ value: any }>): void => {
@@ -137,7 +136,7 @@ const EditAlert = ({ session, alert }: Props): ReactElement => {
           },
         })
         .then(() => {
-          router.push('/alerts');
+          router.push(`/alerts/${alert.id}`);
         })
         .catch((err) => {
           console.log(err);

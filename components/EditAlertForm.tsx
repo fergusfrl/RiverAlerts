@@ -11,6 +11,7 @@ import {
   Select,
 } from '@material-ui/core';
 import { Gauge } from '../types';
+import { Autocomplete } from '@material-ui/lab';
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -66,7 +67,7 @@ type Props = {
   handleChange: (event: ChangeEvent<HTMLInputElement>) => void;
   title: string;
   description: string;
-  handleGaugeSelect: (event: ChangeEvent<{ value: unknown }>) => void;
+  handleGaugeSelect: (event: ChangeEvent<unknown>, value: Gauge | null) => void;
   gaugeId: string | null;
   gauges: Gauge[];
   handleOperationSelect: (event: ChangeEvent<{ value: unknown }>) => void;
@@ -125,7 +126,7 @@ const EditAlertForm = ({
             Send me an Alert when
           </Typography>
         </div>
-        {gauges.length > 0 && (
+        {/* {gauges.length > 0 && (
           <div className={classes.gridItem}>
             <Select
               value={gaugeId || 1071105}
@@ -141,8 +142,21 @@ const EditAlertForm = ({
               ))}
             </Select>
           </div>
+        )} */}
+        {gauges.length > 0 && (
+          <div className={classes.gridItem}>
+            <Autocomplete
+              options={gauges}
+              getOptionLabel={(gauge) => `${gauge.name} - ${gauge.river_name}`}
+              renderInput={(params) => <TextField {...params} variant="outlined" />}
+              onChange={handleGaugeSelect}
+              className={classes.inlineSelect}
+              style={{ width: 350 }}
+              value={gauges.find((gauge) => gauge.id === gaugeId)}
+            />
+          </div>
         )}
-
+        {/* TODO: throbber? */}
         <div className={classes.gridItem}>
           <Typography variant="body1" color="primary">
             Is

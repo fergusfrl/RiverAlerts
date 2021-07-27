@@ -85,10 +85,8 @@ const CreateAlert = ({ session }: Props): ReactElement => {
     if (event.target.id === 'description') setDescription(value);
   };
 
-  const handleGaugeSelect = (event: ChangeEvent<{ value: unknown }>): void => {
-    console.log();
-    const gauge = gauges.find((gauge) => gauge.id === event.target.value) || null;
-    setSelectedGauge(gauge);
+  const handleGaugeSelect = (_: ChangeEvent<unknown>, value: Gauge | null): void => {
+    setSelectedGauge(value);
   };
 
   const handleOperationSelect = (event: ChangeEvent<{ value: unknown }>): void => {
