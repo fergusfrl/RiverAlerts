@@ -100,6 +100,13 @@ const EditAlertForm = ({
 }: Props): ReactElement => {
   const classes = useStyles();
 
+  console.log(
+    'HAS_CUMECS:',
+    !!gauges
+      .find((gauge) => gauge.id === gaugeId)
+      ?.observables.find((observation) => observation.units === 'cumecs')
+  );
+
   return (
     <form className={classes.form} id="create-alert">
       <TextField
@@ -126,23 +133,6 @@ const EditAlertForm = ({
             Send me an Alert when
           </Typography>
         </div>
-        {/* {gauges.length > 0 && (
-          <div className={classes.gridItem}>
-            <Select
-              value={gaugeId || 1071105}
-              variant="outlined"
-              className={classes.inlineSelect}
-              placeholder="Gauge Name"
-              onChange={handleGaugeSelect}
-            >
-              {gauges.map((gauge) => (
-                <MenuItem key={gauge.id} value={gauge.id}>
-                  {gauge.name} | {gauge.river_name}
-                </MenuItem>
-              ))}
-            </Select>
-          </div>
-        )} */}
         {gauges.length > 0 && (
           <div className={classes.gridItem}>
             <Autocomplete
@@ -193,8 +183,16 @@ const EditAlertForm = ({
             className={classes.inlineSelect}
             onChange={handleUnitsSelect}
           >
-            <MenuItem value={'Cumecs'}>Cumecs</MenuItem>
-            <MenuItem value={'Meters'}>Meters</MenuItem>
+            {!!gauges
+              .find((gauge) => gauge.id === gaugeId)
+              ?.observables.find((observation) => observation.units === 'cumecs') && (
+              <MenuItem value={'Cumecs'}>Cumecs</MenuItem>
+            )}
+            {!!gauges
+              .find((gauge) => gauge.id === gaugeId)
+              ?.observables.find((observation) => observation.units === 'metres') && (
+              <MenuItem value={'Meters'}>Meters</MenuItem>
+            )}
           </Select>
         </div>
       </div>
