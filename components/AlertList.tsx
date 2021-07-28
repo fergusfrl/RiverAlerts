@@ -1,5 +1,10 @@
-import { ReactElement, useState } from 'react';
+import { ReactElement, useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import { useAuth } from '../auth';
+import { useSnackbar } from 'notistack';
+import firebaseClient from '../firebaseClient';
+import firebase from 'firebase/app';
+import 'firebase/auth';
 
 import SearchBar from './SearchBar';
 import { Alert } from '../types';
@@ -94,15 +99,46 @@ const getOperationTranslation = (operation: string): string => {
 };
 
 type Props = {
-  alerts: Alert[];
   selectedId: string | null;
-  isLoading: boolean;
 };
 
-const AlertList = ({ alerts, selectedId, isLoading }: Props): ReactElement => {
+const AlertList = ({ selectedId }: Props): ReactElement => {
+  firebaseClient();
+
   const classes = useStyles();
   const router = useRouter();
+  const { user }: { user: firebase.User | null } = useAuth();
+  const { enqueueSnackbar } = useSnackbar();
   const [searchString, setSearchString] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [alerts, setAlerts] = useState<Alert[]>([]);
+
+  useEffect(() => {
+    setIsLoading(true);
+    firebase
+      .firestore()
+      .collection('users')
+      .doc(user?.uid)
+      .collection('alerts')
+      .get()
+      .then((querySnap) => {
+        const alertData = querySnap.docs.map((doc) => doc.data() as Alert);
+        const orderedAlerts = alertData.sort((a, b) => {
+          if (a.name > b.name) return 1;
+          if (a.name < b.name) return -1;
+          return 0;
+        });
+        setAlerts(orderedAlerts);
+      })
+      .catch(() => {
+        enqueueSnackbar('Something went wrong getting your alerts.', {
+          variant: 'error',
+        });
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }, [enqueueSnackbar, user]);
 
   const filteredAlerts = alerts.filter((alert) => {
     if (!searchString) return true;
@@ -120,7 +156,7 @@ const AlertList = ({ alerts, selectedId, isLoading }: Props): ReactElement => {
 
   const renderAlerts = (): ReactElement[] =>
     filteredAlerts.map((alert) => {
-      const isSelected = selectedId === alert.id;
+      const isSelected = alert.id === selectedId;
       return (
         <div key={alert.id} className={classes.cardWrapper}>
           <Card className={isSelected ? classes.card : ''} elevation={isSelected ? 0 : 2}>
