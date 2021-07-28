@@ -100,13 +100,6 @@ const EditAlertForm = ({
 }: Props): ReactElement => {
   const classes = useStyles();
 
-  console.log(
-    'HAS_CUMECS:',
-    !!gauges
-      .find((gauge) => gauge.id === gaugeId)
-      ?.observables.find((observation) => observation.units === 'cumecs')
-  );
-
   return (
     <form className={classes.form} id="create-alert">
       <TextField

@@ -1,5 +1,4 @@
 import { ReactElement } from 'react';
-import Link from 'next/link';
 import firebase from 'firebase/app';
 import { useAuth } from '../auth';
 
@@ -10,7 +9,8 @@ import SearchBar from './SearchBar';
 import GaugeMap from './GaugeMap';
 
 import { makeStyles } from '@material-ui/core/styles';
-import { Button, Drawer, List, CircularProgress } from '@material-ui/core';
+import { Drawer, List, CircularProgress, AppBar } from '@material-ui/core';
+import AuthButtons from './AuthButtons';
 
 const useStyles = makeStyles((theme) => ({
   drawer: {
@@ -27,13 +27,18 @@ const useStyles = makeStyles((theme) => ({
       paddingBottom: '4em',
     },
   },
-  authButtons: {
+  toolbar: {
     display: 'flex',
-    flexDirection: 'column',
-    margin: theme.spacing(2.5, 1, 0, 1),
-  },
-  registerButton: {
-    marginBottom: theme.spacing(1),
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: theme.spacing(2.5),
+    width: '100%',
+    borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
+    backgroundColor: theme.palette.primary.contrastText,
+    ...theme.mixins.toolbar,
+    [theme.breakpoints.up('sm')]: {
+      paddingBottom: theme.spacing(3),
+    },
   },
   throbber: {
     display: 'flex',
@@ -62,26 +67,16 @@ const GaugeList = ({
 
   return (
     <Drawer variant="permanent" classes={{ root: classes.drawer, paper: classes.drawer }}>
-      {!user && (
-        <div className={classes.authButtons}>
-          <Link href="/register">
-            <Button variant="contained" color="secondary" className={classes.registerButton}>
-              Register an Account
-            </Button>
-          </Link>
-          <Link href="login">
-            <Button variant="text" color="primary">
-              Sign In
-            </Button>
-          </Link>
-        </div>
-      )}
-      <SearchBar
-        handleSearch={handleSearch}
-        toggleViewType={toggleViewType}
-        viewType={viewType}
-        placeholder="Search Gauges"
-      />
+      <AppBar position="sticky" elevation={0} className={classes.toolbar}>
+        {!user && <AuthButtons />}
+        <SearchBar
+          handleSearch={handleSearch}
+          toggleViewType={toggleViewType}
+          viewType={viewType}
+          placeholder="Search Gauges"
+        />
+      </AppBar>
+
       {viewType === 'LIST_VIEW' ? (
         <List classes={{ root: classes.list }}>
           {isLoading ? (

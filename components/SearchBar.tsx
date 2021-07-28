@@ -1,24 +1,11 @@
 import React, { ChangeEvent, ReactElement, useState } from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
-import { AppBar, Hidden, IconButton, InputBase, Paper, Tab, Tabs } from '@material-ui/core';
+import { Hidden, IconButton, InputBase, Paper, Tab, Tabs } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import CloseIcon from '@material-ui/icons/Close';
 
 const useStyles = makeStyles((theme) => ({
-  toolbar: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingTop: theme.spacing(2.5),
-    width: '100%',
-    borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
-    backgroundColor: theme.palette.primary.contrastText,
-    ...theme.mixins.toolbar,
-    [theme.breakpoints.up('sm')]: {
-      paddingBottom: theme.spacing(3),
-    },
-  },
   paper: {
     margin: theme.spacing(0, 2),
     padding: '2px 4px',
@@ -74,7 +61,8 @@ const SearchBar = ({
   };
 
   return (
-    <AppBar className={classes.toolbar} position="sticky" elevation={0}>
+    // <AppBar className={classes.toolbar} position="sticky" elevation={0}>
+    <>
       <Paper className={classes.paper} elevation={4}>
         <InputBase
           value={searchVal}
@@ -103,7 +91,7 @@ const SearchBar = ({
           </Hidden>
         </div>
       )}
-    </AppBar>
+    </>
   );
 };
 
