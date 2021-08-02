@@ -184,7 +184,7 @@ const EditAlertForm = ({
             {!!gauges
               .find((gauge) => gauge.id === gaugeId)
               ?.observables.find((observation) => observation.units === 'metres') && (
-              <MenuItem value={'Meters'}>Meters</MenuItem>
+              <MenuItem value={'Metres'}>Metres</MenuItem>
             )}
           </Select>
         </div>

@@ -14,13 +14,24 @@ type Props = {
   data: Reading[];
   units: string;
   gaugeSource?: string;
+  alertThreshold?: number;
+  alertName?: string;
+  lightTheme?: boolean;
 };
 
-const TimeSeriesGraph = ({ data, units, gaugeSource }: Props): ReactElement => {
+const TimeSeriesGraph = ({
+  data,
+  units,
+  gaugeSource,
+  alertThreshold,
+  alertName,
+  lightTheme = false,
+}: Props): ReactElement => {
   const chartOptions = {
     chart: {
       type: 'line',
       height: '250px',
+      backgroundColor: lightTheme ? '#FFF' : '#FAFAFA',
     },
     legend: {
       enabled: false,
@@ -29,13 +40,27 @@ const TimeSeriesGraph = ({ data, units, gaugeSource }: Props): ReactElement => {
       title: {
         text: units,
       },
+      plotLines: [
+        {
+          color: '#E63B66',
+          dashStyle: 'dash',
+          value: alertThreshold,
+          width: 2,
+          label: {
+            text: `${alertName} (${alertThreshold} ${units})`,
+            style: {
+              color: '#E63B66',
+            },
+          },
+        },
+      ],
     },
     xAxis: {
       type: 'datetime',
     },
     series: [
       {
-        color: '#E63B66',
+        color: '#193E60',
         name: units,
         data: data.map((x) => [Date.parse(x.time), x.flow || x.stage_height]),
       },

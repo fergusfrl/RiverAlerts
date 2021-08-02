@@ -226,15 +226,28 @@ const AlertDisplay = ({ alert, onDelete }: Props): ReactElement => {
           Live Data
         </Typography>
       )}
+      {console.log(alert?.threshold.units)}
       <div className={classes.liveData}>
         {flowData && flowData.length > 0 && (
-          <TimeSeriesGraph data={flowData} units="cumecs" gaugeSource={alert?.gauge.data_source} />
+          <TimeSeriesGraph
+            data={flowData}
+            units="cumecs"
+            gaugeSource={alert?.gauge.data_source}
+            alertName={alert?.name}
+            alertThreshold={
+              alert?.threshold.units === 'Cumecs' ? alert?.threshold.value : undefined
+            }
+          />
         )}
         {stageHeigthData && stageHeigthData.length > 0 && (
           <TimeSeriesGraph
             data={stageHeigthData}
             units="metres"
             gaugeSource={alert?.gauge.data_source}
+            alertName={alert?.name}
+            alertThreshold={
+              alert?.threshold.units === 'Metres' ? alert?.threshold.value : undefined
+            }
           />
         )}
       </div>

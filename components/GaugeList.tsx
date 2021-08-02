@@ -73,7 +73,7 @@ const GaugeList = ({
           handleSearch={handleSearch}
           toggleViewType={toggleViewType}
           viewType={viewType}
-          placeholder="Search Gauges"
+          placeholder="Search"
         />
       </AppBar>
 

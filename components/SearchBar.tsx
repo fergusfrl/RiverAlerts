@@ -67,7 +67,7 @@ const SearchBar = ({
           value={searchVal}
           className={classes.input}
           placeholder={placeholder}
-          inputProps={{ 'aria-label': `Search Gauges` }}
+          inputProps={{ 'aria-label': `Search` }}
           onChange={handleChange}
         />
         <IconButton className={classes.iconButton} aria-label="search" onClick={handleClick}>

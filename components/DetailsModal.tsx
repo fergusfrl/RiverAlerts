@@ -150,13 +150,19 @@ const DetailsModal = ({ gaugeData }: Props): ReactElement => {
         <Divider />
         <CardContent className={classes.cardContentWrapper}>
           {flowData && flowData.length > 0 && (
-            <TimeSeriesGraph data={flowData} units="cumecs" gaugeSource={gaugeData?.data_source} />
+            <TimeSeriesGraph
+              data={flowData}
+              units="cumecs"
+              gaugeSource={gaugeData?.data_source}
+              lightTheme
+            />
           )}
           {stageHeigthData && stageHeigthData.length > 0 && (
             <TimeSeriesGraph
               data={stageHeigthData}
               units="metres"
               gaugeSource={gaugeData?.data_source}
+              lightTheme
             />
           )}
         </CardContent>
