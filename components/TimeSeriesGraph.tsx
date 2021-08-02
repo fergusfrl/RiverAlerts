@@ -30,8 +30,9 @@ const TimeSeriesGraph = ({
   const chartOptions = {
     chart: {
       type: 'line',
-      height: '250px',
+      height: '300px',
       backgroundColor: lightTheme ? '#FFF' : '#FAFAFA',
+      marginBottom: 80,
     },
     legend: {
       enabled: false,
@@ -66,7 +67,10 @@ const TimeSeriesGraph = ({
       },
     ],
     title: {
-      text: units === 'cumecs' ? 'Flow (cumecs)' : 'Height (metres)',
+      text:
+        units === 'cumecs'
+          ? `Flow: <strong>${data[0].flow?.toFixed(1)} Cumecs</strong>`
+          : `Height: <strong>${data[0].stage_height?.toFixed(1)} Metres</strong>`,
       align: 'left',
     },
     subtitle: {

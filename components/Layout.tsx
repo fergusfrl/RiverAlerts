@@ -25,9 +25,10 @@ const useStyles = makeStyles((theme) => ({
 type Props = {
   children?: ReactNode;
   title?: string;
+  shareTitle?: string;
 };
 
-const Layout = ({ children, title = '' }: Props): ReactElement => {
+const Layout = ({ children, title = '', shareTitle }: Props): ReactElement => {
   const classes = useStyles();
   const { user }: { user: firebase.User | null } = useAuth();
 
@@ -48,6 +49,15 @@ const Layout = ({ children, title = '' }: Props): ReactElement => {
         <title>{title.length === 0 ? 'River Alerts' : `${title} | River Alerts`}</title>
         <meta charSet="utf-8" />
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+        {shareTitle && <meta property="og:title" content={shareTitle} />}
+        <meta property="og:image" content="/river-alerts-share-screenshot.png" />
+        <meta property="og:url" content="www.riveralerts.co.nz" />
+        <meta property="og:type" content="website" />
+        <meta name="twitter:card" content="summary" />
+        <meta
+          property="og:description"
+          content="View up to date NZ river levels. Set Alerts and Notifications."
+        />
       </Head>
       <Hidden implementation="css" xsDown>
         <SideNav navList={navList} />

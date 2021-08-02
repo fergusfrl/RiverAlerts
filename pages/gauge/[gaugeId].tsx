@@ -39,8 +39,15 @@ const GaugePage = ({ gaugeInfo, observations }: Props): ReactElement => {
     .filter((observation) => !!observation.stage_height)
     .map(({ stage_height, time }) => ({ stage_height, time }));
 
+  const getShareTitle = (): string => {
+    const values = gaugeInfo.observables.map(
+      (observation) => `${observation.latest_value} ${observation.units}`
+    );
+    return `${gaugeInfo.name}: ${values.join(' • ')}`;
+  };
+
   return (
-    <Layout title={gaugeInfo ? gaugeInfo.name : 'Gauge'}>
+    <Layout title={gaugeInfo ? gaugeInfo.name : 'Gauge'} shareTitle={getShareTitle()}>
       <div className={classes.container}>
         <Typography color="primary" variant="h5">
           {gaugeInfo?.name}
