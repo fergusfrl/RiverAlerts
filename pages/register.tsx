@@ -1,8 +1,7 @@
 import { useState, ReactElement, ChangeEvent, MouseEvent } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import firebaseClient from '../firebaseClient';
-import firebase from 'firebase/app';
+import firebase from '../firebaseClient';
 import 'firebase/auth';
 import { useSnackbar } from 'notistack';
 
@@ -42,7 +41,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const RegisterPage = (): ReactElement => {
-  firebaseClient();
   const classes = useStyles();
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();

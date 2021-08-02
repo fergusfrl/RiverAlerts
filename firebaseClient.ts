@@ -1,4 +1,6 @@
-import firebase from 'firebase';
+import firebase from 'firebase/app';
+import 'firebase/auth';
+import 'firebase/firestore';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -10,10 +12,8 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MESSUREMENT_ID,
 };
 
-const firebaseClient = (): void => {
-  if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-  }
-};
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
 
-export default firebaseClient;
+export default firebase;

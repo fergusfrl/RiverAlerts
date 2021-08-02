@@ -61,7 +61,6 @@ const SearchBar = ({
   };
 
   return (
-    // <AppBar className={classes.toolbar} position="sticky" elevation={0}>
     <>
       <Paper className={classes.paper} elevation={4}>
         <InputBase

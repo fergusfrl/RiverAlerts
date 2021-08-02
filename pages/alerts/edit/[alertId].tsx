@@ -5,8 +5,7 @@ import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import nookies from 'nookies';
-import firebaseClient from '../../../firebaseClient';
-import firebase from 'firebase/app';
+import firebase from '../../../firebaseClient';
 import 'firebase/auth';
 
 import Layout from '../../../components/Layout';
@@ -54,8 +53,6 @@ const EditAlert = ({ session, alert }: Props): ReactElement => {
   const [value, setValue] = useState<number | null>(alert?.threshold?.value || null);
   const [units, setUnits] = useState(alert?.threshold?.units || 'Cumecs');
   const [includeEmail, setIncludeEmail] = useState(alert?.contactPreference?.includeEmail || false);
-
-  firebaseClient();
 
   useEffect(() => {
     axios
@@ -212,6 +209,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
     return { props: { alert: null, session: null } };
   } catch (err) {
+    console.log(err);
     context.res.writeHead(302, { location: '/login' });
     context.res.end();
     return { props: { alert: null, session: null } };

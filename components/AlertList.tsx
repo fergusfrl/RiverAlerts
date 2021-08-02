@@ -2,8 +2,7 @@ import { ReactElement, useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '../auth';
 import { useSnackbar } from 'notistack';
-import firebaseClient from '../firebaseClient';
-import firebase from 'firebase/app';
+import firebase from '../firebaseClient';
 import 'firebase/auth';
 
 import SearchBar from './SearchBar';
@@ -11,6 +10,7 @@ import { Alert } from '../types';
 
 import { makeStyles } from '@material-ui/core/styles';
 import {
+  AppBar,
   Card,
   CardActionArea,
   CardContent,
@@ -88,6 +88,19 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: 'center',
     marginTop: theme.spacing(4),
   },
+  toolbar: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: theme.spacing(2.5),
+    width: '100%',
+    borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
+    backgroundColor: theme.palette.primary.contrastText,
+    ...theme.mixins.toolbar,
+    [theme.breakpoints.up('sm')]: {
+      paddingBottom: theme.spacing(3),
+    },
+  },
 }));
 
 const getOperationTranslation = (operation: string): string => {
@@ -103,8 +116,6 @@ type Props = {
 };
 
 const AlertList = ({ selectedId }: Props): ReactElement => {
-  firebaseClient();
-
   const classes = useStyles();
   const router = useRouter();
   const { user }: { user: firebase.User | null } = useAuth();
@@ -115,29 +126,33 @@ const AlertList = ({ selectedId }: Props): ReactElement => {
 
   useEffect(() => {
     setIsLoading(true);
-    firebase
-      .firestore()
-      .collection('users')
-      .doc(user?.uid)
-      .collection('alerts')
-      .get()
-      .then((querySnap) => {
-        const alertData = querySnap.docs.map((doc) => doc.data() as Alert);
-        const orderedAlerts = alertData.sort((a, b) => {
-          if (a.name > b.name) return 1;
-          if (a.name < b.name) return -1;
-          return 0;
+
+    if (user) {
+      firebase
+        .firestore()
+        .collection('users')
+        .doc(user.uid)
+        .collection('alerts')
+        .get()
+        .then((querySnap) => {
+          const alertData = querySnap.docs.map((doc) => doc.data() as Alert);
+          const orderedAlerts = alertData.sort((a, b) => {
+            if (a.name > b.name) return 1;
+            if (a.name < b.name) return -1;
+            return 0;
+          });
+          setAlerts(orderedAlerts);
+        })
+        .catch((err) => {
+          console.log(err);
+          enqueueSnackbar('Something went wrong getting your alerts.', {
+            variant: 'error',
+          });
+        })
+        .finally(() => {
+          setIsLoading(false);
         });
-        setAlerts(orderedAlerts);
-      })
-      .catch(() => {
-        enqueueSnackbar('Something went wrong getting your alerts.', {
-          variant: 'error',
-        });
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+    }
   }, [enqueueSnackbar, user]);
 
   const filteredAlerts = alerts.filter((alert) => {
@@ -229,7 +244,9 @@ const AlertList = ({ selectedId }: Props): ReactElement => {
 
   return (
     <Drawer variant="permanent" classes={{ root: classes.drawer, paper: classes.drawer }}>
-      <SearchBar handleSearch={setSearchString} placeholder="Search Alerts" />
+      <AppBar position="sticky" elevation={0} className={classes.toolbar}>
+        <SearchBar handleSearch={setSearchString} placeholder="Search Alerts" />
+      </AppBar>
       {isLoading && (
         <div className={classes.throbber}>
           <CircularProgress size={20} />

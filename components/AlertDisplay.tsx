@@ -2,8 +2,7 @@ import { ReactElement, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import axios from 'axios';
-import firebaseClient from '../firebaseClient';
-import firebase from 'firebase/app';
+import firebase from '../firebaseClient';
 import 'firebase/auth';
 
 import { useAuth } from '../auth';
@@ -96,7 +95,6 @@ const getOperationTranslation = (operation: string | undefined): string => {
 };
 
 const AlertDisplay = ({ alert, onDelete }: Props): ReactElement => {
-  firebaseClient();
   const classes = useStyles();
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();

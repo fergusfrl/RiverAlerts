@@ -54,7 +54,6 @@ export const verifyIdToken = (token: string): Promise<admin.auth.DecodedIdToken>
  * @returns User
  */
 export const getUser = async (uid: string): Promise<User> => {
-  initializeAdminSDK();
   const userRef = getUserRef(uid);
   const userDoc = await userRef.get();
   return userDoc.data() as User;
@@ -67,7 +66,6 @@ export const getUser = async (uid: string): Promise<User> => {
  * @returns Alert[]
  */
 export const getUserAlerts = async (uid: string): Promise<Alert[]> => {
-  initializeAdminSDK();
   const userRef = getUserRef(uid);
   const alertRefs = await userRef.collection('alerts').get();
   const alerts = alertRefs.docs.map((alertRef) => {
@@ -86,7 +84,6 @@ export const getUserAlerts = async (uid: string): Promise<Alert[]> => {
  * @returns Alert
  */
 export const getUserAlert = async (uid: string, alertId: string): Promise<Alert> => {
-  initializeAdminSDK();
   const userRef = getUserRef(uid);
   const alertDoc = await userRef.collection('alerts').doc(alertId).get();
   const alert = { id: alertId, ...alertDoc.data() } as Alert;

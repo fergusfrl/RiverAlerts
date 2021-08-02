@@ -4,8 +4,7 @@ import { verifyIdToken, getUser } from '../firebaseAuth';
 import { GetServerSideProps } from 'next';
 import { useSnackbar } from 'notistack';
 import nookies from 'nookies';
-import firebaseClient from '../firebaseClient';
-import firebase from 'firebase/app';
+import firebase from '../firebaseClient';
 import 'firebase/auth';
 
 import Layout from '../components/Layout';
@@ -61,7 +60,6 @@ type Props = {
 };
 
 const ProfilePage = ({ user, session }: Props): ReactElement => {
-  firebaseClient();
   const router = useRouter();
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();

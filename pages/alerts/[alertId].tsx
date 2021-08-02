@@ -1,8 +1,7 @@
 import { ReactElement, useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '../../auth';
-import firebaseClient from '../../firebaseClient';
-import firebase from 'firebase/app';
+import firebase from '../../firebaseClient';
 import 'firebase/auth';
 
 import Layout from '../../components/Layout';
@@ -32,7 +31,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const AlertPage = (): ReactElement => {
-  firebaseClient();
   const classes = useStyles();
   const router = useRouter();
   const { user }: { user: firebase.User | null } = useAuth();
@@ -43,25 +41,22 @@ const AlertPage = (): ReactElement => {
   } = router;
 
   useEffect(() => {
-    if (!user) {
-      router.push('/login');
-      return;
-    }
-
     if (typeof alertId !== 'string') {
       return;
     }
 
-    firebase
-      .firestore()
-      .collection('users')
-      .doc(user.uid)
-      .collection('alerts')
-      .doc(alertId)
-      .get()
-      .then((doc) => {
-        setSelectedAlert(doc.data() as Alert);
-      });
+    if (user) {
+      firebase
+        .firestore()
+        .collection('users')
+        .doc(user.uid)
+        .collection('alerts')
+        .doc(alertId)
+        .get()
+        .then((doc) => {
+          setSelectedAlert(doc.data() as Alert);
+        });
+    }
   }, [user, router, alertId]);
 
   const renderNotSelected = (): ReactElement => (

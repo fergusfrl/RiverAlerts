@@ -5,8 +5,7 @@ import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import nookies from 'nookies';
-import firebaseClient from '../../firebaseClient';
-import firebase from 'firebase/app';
+import firebase from '../../firebaseClient';
 import 'firebase/auth';
 
 import Layout from '../../components/Layout';
@@ -50,8 +49,6 @@ const CreateAlert = ({ session }: Props): ReactElement => {
   const [value, setValue] = useState<number | null>(null);
   const [units, setUnits] = useState('Cumecs');
   const [includeEmail, setIncludeEmail] = useState(true);
-
-  firebaseClient();
 
   useEffect(() => {
     axios
