@@ -78,7 +78,7 @@ const CreateAlert = ({ session }: Props): ReactElement => {
           variant: 'error',
         });
       });
-  }, [enqueueSnackbar]);
+  }, [enqueueSnackbar, gaugeId]);
 
   const formIsValid = (): boolean => {
     return title !== '' && selectedGauge != null && value != null && includeEmail;
