@@ -9,6 +9,7 @@ export type User = {
   name: Name;
   email: string;
   phoneNumber: string;
+  alertCount: number;
 };
 
 export type NavItem = {

@@ -1,6 +1,7 @@
 import { useEffect, ReactElement, useState, forwardRef } from 'react';
 import { useRouter } from 'next/router';
 import axios from 'axios';
+import firebase from '../firebaseClient';
 
 import TimeSeriesGraph from './TimeSeriesGraph';
 
@@ -26,7 +27,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import PlaceOutlinedIcon from '@material-ui/icons/PlaceOutlined';
 import AddAlertIcon from '@material-ui/icons/AddAlert';
 
-import { Gauge, GaugeData } from '../types/index';
+import { Gauge, GaugeData, User } from '../types/index';
 import { useAuth } from '../auth';
 
 const useStyles = makeStyles((theme) => ({
@@ -68,6 +69,7 @@ type Props = {
 
 const DetailsModal = ({ gaugeData }: Props): ReactElement => {
   const [liveData, setLiveData] = useState<GaugeData | null>(null);
+  const [alertCount, setAlertCount] = useState<number | null>(null);
   const { user } = useAuth();
   const classes = useStyles();
   const router = useRouter();
@@ -97,7 +99,18 @@ const DetailsModal = ({ gaugeData }: Props): ReactElement => {
           setLiveData(res.data);
         });
     }
-  }, [gaugeId]);
+
+    if (user) {
+      firebase
+        .firestore()
+        .doc(`users/${user.uid}`)
+        .get()
+        .then((userDoc) => {
+          const { alertCount: userAlertCount } = userDoc.data() as User;
+          setAlertCount(userAlertCount);
+        });
+    }
+  }, [gaugeId, user]);
 
   // On small screen, use Full Screen Dialog
   const renderDialog = (): ReactElement => (
@@ -133,7 +146,7 @@ const DetailsModal = ({ gaugeData }: Props): ReactElement => {
               <Tooltip title={`Create Alert for ${gaugeData?.name}`}>
                 <span>
                   <IconButton
-                    disabled={!user}
+                    disabled={!user || (alertCount !== null && alertCount >= 3)}
                     color="secondary"
                     onClick={() => router.push(`./alerts/create?gaugeId=${gaugeData?.id}`)}
                   >
