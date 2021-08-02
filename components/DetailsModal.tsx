@@ -18,13 +18,16 @@ import {
   Grid,
   IconButton,
   Slide,
+  Tooltip,
   Typography,
 } from '@material-ui/core';
 import { TransitionProps } from '@material-ui/core/transitions';
 import CloseIcon from '@material-ui/icons/Close';
 import PlaceOutlinedIcon from '@material-ui/icons/PlaceOutlined';
+import AddAlertIcon from '@material-ui/icons/AddAlert';
 
 import { Gauge, GaugeData } from '../types/index';
+import { useAuth } from '../auth';
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -65,6 +68,7 @@ type Props = {
 
 const DetailsModal = ({ gaugeData }: Props): ReactElement => {
   const [liveData, setLiveData] = useState<GaugeData | null>(null);
+  const { user } = useAuth();
   const classes = useStyles();
   const router = useRouter();
   const theme = useTheme();
@@ -126,13 +130,17 @@ const DetailsModal = ({ gaugeData }: Props): ReactElement => {
           }
           action={
             <>
-              {/* <IconButton
-                color="secondary"
-                disabled={!user}
-                onClick={() => router.push('./alerts/create')}
-              >
-                <AddAlertIcon />
-              </IconButton> */}
+              <Tooltip title={`Create Alert for ${gaugeData?.name}`}>
+                <span>
+                  <IconButton
+                    disabled={!user}
+                    color="secondary"
+                    onClick={() => router.push(`./alerts/create?gaugeId=${gaugeData?.id}`)}
+                  >
+                    <AddAlertIcon />
+                  </IconButton>
+                </span>
+              </Tooltip>
               <IconButton onClick={() => router.push('/')}>
                 <CloseIcon />
               </IconButton>

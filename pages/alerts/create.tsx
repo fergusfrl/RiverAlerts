@@ -50,6 +50,10 @@ const CreateAlert = ({ session }: Props): ReactElement => {
   const [units, setUnits] = useState('Cumecs');
   const [includeEmail, setIncludeEmail] = useState(true);
 
+  const {
+    query: { gaugeId },
+  } = router;
+
   useEffect(() => {
     axios
       .post('https://data.riverguide.co.nz/', {
@@ -144,7 +148,7 @@ const CreateAlert = ({ session }: Props): ReactElement => {
           title={title}
           description={description}
           handleGaugeSelect={handleGaugeSelect}
-          gaugeId={selectedGauge?.id || null}
+          gaugeId={selectedGauge?.id || (gaugeId as string) || null}
           gauges={gauges}
           handleOperationSelect={handleOperationSelect}
           operation={operation}
