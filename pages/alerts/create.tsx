@@ -62,12 +62,16 @@ const CreateAlert = ({ session }: Props): ReactElement => {
         filters: ['flow', 'stage_height'],
       })
       .then((res) => {
-        const orderedGauges = res.data.features.sort((a: Gauge, b: Gauge) => {
+        const orderedGauges: Gauge[] = res.data.features.sort((a: Gauge, b: Gauge) => {
           if (a.name > b.name) return 1;
           if (a.name < b.name) return -1;
           return 0;
         });
         setGauges(orderedGauges);
+
+        if (gaugeId) {
+          setSelectedGauge(orderedGauges.find((gauge) => gauge.id === gaugeId) || null);
+        }
       })
       .catch(() => {
         enqueueSnackbar('Could not get gauges', {
@@ -99,7 +103,7 @@ const CreateAlert = ({ session }: Props): ReactElement => {
   };
 
   const handleValueChange = (event: ChangeEvent<HTMLInputElement>): void => {
-    const val = parseInt(event.target.value, 10) || null;
+    const val = parseFloat(event.target.value) || null;
     setValue(val);
   };
 

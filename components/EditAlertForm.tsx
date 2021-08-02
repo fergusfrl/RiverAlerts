@@ -160,6 +160,7 @@ const EditAlertForm = ({
         </div>
         <div className={classes.gridItem}>
           <TextField
+            type="number"
             value={value}
             id="value"
             placeholder="20"

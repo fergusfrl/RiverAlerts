@@ -105,7 +105,7 @@ const EditAlert = ({ session, alert }: Props): ReactElement => {
   };
 
   const handleValueChange = (event: ChangeEvent<HTMLInputElement>): void => {
-    const val = parseInt(event.target.value, 10) || null;
+    const val = parseFloat(event.target.value) || null;
     setValue(val);
   };
 
