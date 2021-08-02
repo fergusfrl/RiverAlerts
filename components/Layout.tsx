@@ -49,14 +49,21 @@ const Layout = ({ children, title = '', shareTitle }: Props): ReactElement => {
         <title>{title.length === 0 ? 'River Alerts' : `${title} | River Alerts`}</title>
         <meta charSet="utf-8" />
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
-        {shareTitle && <meta property="og:title" content={shareTitle} />}
-        <meta property="og:image" content="/river-alerts-share-screenshot.png" />
+        <meta property="og:title" content={shareTitle || 'River Alerts'} />
+        <meta
+          property="og:image"
+          content={
+            shareTitle
+              ? '/river-alerts-gauge-share-screenshot.png'
+              : '/river-alerts-home-share-screenshot.png'
+          }
+        />
         <meta property="og:url" content="www.riveralerts.co.nz" />
         <meta property="og:type" content="website" />
         <meta name="twitter:card" content="summary" />
         <meta
           property="og:description"
-          content="View up to date NZ river levels. Set Alerts and Notifications."
+          content="Explore New Zealand River Data. Set custom Alerts and Notifications to stay up to date on current river levels."
         />
       </Head>
       <Hidden implementation="css" xsDown>
