@@ -19,14 +19,13 @@ import {
   DialogContentText,
   DialogTitle,
   Typography,
-  Divider,
   IconButton,
   Tooltip,
 } from '@material-ui/core';
-import PlaceOutlinedIcon from '@material-ui/icons/PlaceOutlined';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AlertActiveIcon from '@material-ui/icons/NotificationsActive';
+import EmailIcon from '@material-ui/icons/Email';
 
 const useStyles = makeStyles((theme) => ({
   alert: {
@@ -78,6 +77,22 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  content: {
+    margin: theme.spacing(3, 0, 8, 0),
+  },
+  chipLine: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: theme.spacing(1),
+    alignItems: 'center',
+    margin: theme.spacing(3, 0),
+  },
+  active: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: theme.spacing(1),
+    margin: theme.spacing(1, 0, 0, 1),
   },
 }));
 
@@ -151,17 +166,17 @@ const AlertDisplay = ({ alert, onDelete }: Props): ReactElement => {
 
   return (
     <div className={classes.alert}>
+      {/* HEADER */}
       <div className={classes.titleWrapper}>
         <div className={classes.titleAlertWrapper}>
           <Typography color="primary" variant="h5" className={classes.title}>
             {alert?.name}
           </Typography>
           {alert?.active && (
-            <Chip
-              color="secondary"
-              icon={<AlertActiveIcon color="primary" fontSize="small" />}
-              label="Active"
-            />
+            <div className={classes.active}>
+              <AlertActiveIcon color="secondary" />
+              <Typography color="secondary">Active</Typography>
+            </div>
           )}
         </div>
 
@@ -187,46 +202,30 @@ const AlertDisplay = ({ alert, onDelete }: Props): ReactElement => {
         </div>
       </div>
       <div className={classes.subtitle}>
-        <PlaceOutlinedIcon fontSize="small" className={classes.subtitleIcon} />
         <Typography variant="subtitle1" color="textSecondary">
-          {`${alert?.gauge.name}, ${alert?.gauge.river_name}`}
+          {alert?.description}
         </Typography>
       </div>
-      <Typography variant="body1" className={classes.description}>
-        {alert?.description}
-      </Typography>
-      <Divider />
-      <Typography variant="subtitle1" color="textSecondary" className={classes.subheader}>
-        Condition
-      </Typography>
-      <Typography variant="body1" className={classes.body}>
-        Send an alert when <span className={classes.highlight}>{alert?.gauge.name}</span> is{' '}
-        <span className={classes.highlight}>
-          {getOperationTranslation(alert?.threshold.operation)}{' '}
-          <strong>
-            {alert?.threshold.value} {alert?.threshold.units}
-          </strong>
-        </span>{' '}
-        to:{' '}
-      </Typography>
-      <span className={classes.chips}>
-        {alert?.contactPreference?.includeEmail && (
-          <Chip
-            className={classes.chip}
-            label={
-              <>
-                Email: <strong>{alert?.contactPreference.email}</strong>
-              </>
-            }
-          />
-        )}
-      </span>
-      {liveData && (
-        <Typography variant="subtitle1" color="textSecondary" className={classes.subheader}>
-          Live Data
-        </Typography>
-      )}
-      {console.log(alert?.threshold.units)}
+
+      {/* CONTENT */}
+      <div className={classes.content}>
+        <div className={classes.chipLine}>
+          <Typography>Trigger alert when</Typography>
+          <Chip label={alert?.gauge.name} />
+          <Typography>is</Typography>
+          <Chip label={getOperationTranslation(alert?.threshold.operation)} />
+          <Chip label={`${alert?.threshold.value} ${alert?.threshold.units}`} />
+        </div>
+        <div className={classes.chipLine}>
+          <Typography>Recipients:</Typography>
+          {alert?.contactPreference.includeEmail && (
+            <Chip label={alert?.contactPreference.email} icon={<EmailIcon fontSize="small" />} />
+          )}
+          {/* TODO: include SMS */}
+        </div>
+      </div>
+
+      {/* GRAPHS */}
       <div className={classes.liveData}>
         {flowData && flowData.length > 0 && (
           <TimeSeriesGraph
