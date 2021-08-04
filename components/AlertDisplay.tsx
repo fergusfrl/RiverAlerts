@@ -79,14 +79,14 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: 'center',
   },
   content: {
-    margin: theme.spacing(3, 0, 8, 0),
+    margin: theme.spacing(3, 0, 6, 0),
   },
   chipLine: {
     display: 'flex',
     flexWrap: 'wrap',
     gap: theme.spacing(1),
     alignItems: 'center',
-    margin: theme.spacing(3, 0),
+    margin: theme.spacing(2, 0),
   },
   active: {
     display: 'flex',
@@ -102,9 +102,9 @@ type Props = {
 };
 
 const getOperationTranslation = (operation: string | undefined): string => {
-  if (operation === 'greater-than') return 'greater than';
-  if (operation === 'less-than') return 'less than';
-  if (operation === 'equals') return 'equal to';
+  if (operation === 'greater-than') return 'Greater Than';
+  if (operation === 'less-than') return 'Less Than';
+  if (operation === 'equals') return 'Equal To';
 
   return '';
 };
@@ -206,20 +206,21 @@ const AlertDisplay = ({ alert, onDelete }: Props): ReactElement => {
           {alert?.description}
         </Typography>
       </div>
-
       {/* CONTENT */}
       <div className={classes.content}>
         <div className={classes.chipLine}>
           <Typography>Trigger alert when</Typography>
-          <Chip label={alert?.gauge.name} />
+          <Chip label={<strong>{alert?.gauge.name}</strong>} />
           <Typography>is</Typography>
-          <Chip label={getOperationTranslation(alert?.threshold.operation)} />
-          <Chip label={`${alert?.threshold.value} ${alert?.threshold.units}`} />
+          <Chip label={<strong>{getOperationTranslation(alert?.threshold.operation)}</strong>} />
+          <Chip label={<strong>{`${alert?.threshold.value} ${alert?.threshold.units}`}</strong>} />
         </div>
         <div className={classes.chipLine}>
           <Typography>Recipients:</Typography>
           {alert?.contactPreference.includeEmail && (
-            <Chip label={alert?.contactPreference.email} icon={<EmailIcon fontSize="small" />} />
+            <Tooltip title="email">
+              <Chip label={alert?.contactPreference.email} icon={<EmailIcon fontSize="small" />} />
+            </Tooltip>
           )}
           {/* TODO: include SMS */}
         </div>
